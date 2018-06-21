@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, AsyncStorage, View, StyleSheet, Text } from 'react-native';
+import { Button, View, StyleSheet, Text } from 'react-native';
 // import * as HttpStatus from 'http-status-codes';
 
 // import Logger from '../services/Logger';
@@ -50,7 +50,6 @@ export class Confirmation extends Component<IProps, IState> {
         method: 'POST',
         body: JSON.stringify(password),
         headers: {
-          'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
       })
@@ -73,29 +72,21 @@ export class Confirmation extends Component<IProps, IState> {
       this.props.navigation.navigate('Wallet', {address: this.state.address, username: this.state.username});
     }
 
-    async faucet() {
-      let address = this.state.address;
-      await AsyncStorage.setItem('address', address);
-      const RequestBody = {'address': address}
+    faucet() {
       fetch('http://localhost/strato-api/eth/v1.2/faucet', {
         method: 'POST',
-        body: JSON.stringify(RequestBody),
+        body: `address=${this.state.address}`,
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
       })
-      .then(response => response.json())
-      .then(json => {
-        console.log('faucted account for', json);
-        this.setState({
-          hasBalance: true,
-        });
+      .then(function (response) {
+        console.log('fauceted account', response);
+        return response;
       })
       .catch(function (error) {
-        console.log('unable to faucet account', error);
         throw error;
-      });
+      })
   }
   
         render() {

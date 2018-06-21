@@ -123,53 +123,19 @@ export class SideBar extends Component<IProps, IState> {
                   containerStyle={styles.navItem}
                   key='ContractDetail'
                   title='ContractDetail'
-                  leftIcon={{name: 'build', color: "rgba(51, 51, 51, 0.8)"}}
+                  leftIcon={{name: 'camera', color: "rgba(51, 51, 51, 0.8)"}}
 
                   onPress={ () => {
                     this.resetNavigation('ContractDetail');
                   }} 
                 />
-                
-                {this.props.loggedIn &&
-                <ListItem
-                  containerStyle={styles.navItem}
-                  key='nodes_visited'
-                  title='Nodes Visited'
-                  leftIcon={{name: 'check', color: "rgba(51, 51, 51, 0.8)"}}
 
-                  onPress={ () => {
-                    this.resetNavigation('Wallet');
-                  }} 
-                />
-
-                }
-
-                {/* {this.props.loggedIn? // if username
-                  <ListItem
-                  containerStyle={styles.navItem}
-                  key='logout'
-                  title='Logout'
-                  leftIcon={{name: 'exit-to-app', color: "rgba(51, 51, 51, 0.8)"}}
-                  onPress={ () => {
-                    this.resetNavigation('Logout');
-                  }} 
-                  /> 
-                :
-                  <ListItem
-                  containerStyle={styles.navItem}
-                  key='login'
-                  title='Login'
-                  leftIcon={{name: 'person-outline', color: "rgba(51, 51, 51, 0.8)"}}
-
-                  onPress={ () => {
-                    this.resetNavigation('Login');
-                    // this.props.navigation.navigate('Login');
-                  }} 
-                  /> 
-              } */}
-
+              {/* START APEX STATUS */}
+              
               <Text style={styles.apexHeader}>Node Stats</Text>
               <Text style={styles.apex}>Hash: {apexHash}</Text>
+
+              {/* END APEX STATUS */}
 
 
             }
@@ -200,22 +166,21 @@ const styles = StyleSheet.create({
     flex: 1
   },
   apexHeader: {
-    paddingLeft: 80,
+    left: 20,
     paddingTop: 50,
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   apex: {
-    borderBottomWidth: 5,
     borderColor: 'black',
-    alignItems: 'center',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 10,
     color: 'green',
     padding: 20,
   },
   navItem: {
     borderBottomWidth: 1,
+    paddingTop: 30,
+    paddingBottom: 30,
     borderBottomColor:"rgba(51, 51, 51, 0.2)",
   }
 });

@@ -41,6 +41,7 @@ export class Confirmation extends Component {
         this.setState({ contractSource: 'contract source for multisig' });
     }
     createEscrowContract() {
+        //this.compileContract();
         this.compileContract();
     }
     compileContract() {
@@ -66,7 +67,7 @@ export class Confirmation extends Component {
             const contractName = this.state.contractName;
             const RequestBody = { password, contractName, src };
             const address = yield AsyncStorage.getItem('address');
-            fetch(blocURL + username + '/' + address + '/contract?resolve', {
+            yield fetch(blocURL + username + '/' + address + '/contract?resolve', {
                 method: 'POST',
                 body: JSON.stringify(RequestBody),
                 headers: {

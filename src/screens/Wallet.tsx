@@ -58,7 +58,7 @@ export class Wallet extends Component<IProps, IState> {
         .then(json => {
           console.log('got balance', json);
           this.setState({
-            accountInfo: json,
+            accountInfo: json[0].balance,
             isLoading: false,
           });
         })
@@ -89,7 +89,7 @@ export class Wallet extends Component<IProps, IState> {
                   <Text style={styles.header}> Welcome to STRATO Mobile {this.state.username}!</Text>
                   <Text style={styles.header}> Your Balance is {accountInfo} </Text>
                   <Button
-                  onPress={this.createContract}
+                  onPress={() => { this.props.navigation.navigate('ContractBuilder') } }
                   title='Create a Contract'
                   />
               </View>

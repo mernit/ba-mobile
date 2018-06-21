@@ -18,11 +18,11 @@ interface IProps {
 interface IState {
     loading: boolean,
     username: string,
+    address: string,
     password: string, 
     contractAddress: string,
     contractName: string,
     contractSource: string,
-    address: any,
     codeHash: string,
     status: string,
     contractEscrow: string,
@@ -63,6 +63,7 @@ export class Confirmation extends Component<IProps, IState> {
     }
 
     createEscrowContract() { // user can select contract from drop down options
+      //this.compileContract();
       this.compileContract();
     }
 
@@ -91,7 +92,7 @@ export class Confirmation extends Component<IProps, IState> {
 
       const address = await AsyncStorage.getItem('address');
 
-      fetch(blocURL + username + '/' + address + '/contract?resolve', {
+      await fetch(blocURL + username + '/' + address + '/contract?resolve', {
         method: 'POST',
         body: JSON.stringify(RequestBody),
         headers: {
@@ -114,7 +115,8 @@ export class Confirmation extends Component<IProps, IState> {
         throw error;
       });
   }
-  
+
+
     render() {
       return (
         <View style={styles.view}>

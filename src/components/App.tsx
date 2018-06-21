@@ -5,10 +5,13 @@ import { View, StatusBar } from 'react-native';
 
 import Confirmation from '../screens/Confirmation';
 import ContractList from '../screens/ContractList';
+import ContractDetail from '../screens/ContractDetail';
+// import ContractItem from '../screens/ContractItem'
 import ContractBuilder from '../screens/ContractBuilder';
 import Wallet from '../screens/Wallet';
 import Signup from '../screens/Signup';
 import SideBar from '../components/SideBar';
+import Camera from '../screens/Camera'
 
 import IStoreState from '../store/IStoreState';
 import { connect, Dispatch } from 'react-redux';
@@ -32,9 +35,11 @@ const InternalStack = StackNavigator({
     })
   },
   Wallet: {screen: Wallet },
+  // ContractItem: { screen: ContractItem},
+  Camera: { screen: Camera },
   ContractList: { screen: ContractList },
   ContractBuilder: { screen: ContractBuilder},
-  ContractDetail: { screen: ContractList },
+  ContractDetail: { screen: ContractDetail },
   Signup: { screen: Signup },
   },
 {

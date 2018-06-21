@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import React, { Component } from 'react';
-import { Button, AsyncStorage, View, StyleSheet, Text } from 'react-native';
+import { Button, View, StyleSheet, Text } from 'react-native';
 import { connect } from 'react-redux';
 export class Confirmation extends Component {
     constructor(props) {
@@ -34,7 +34,6 @@ export class Confirmation extends Component {
                 method: 'POST',
                 body: JSON.stringify(password),
                 headers: {
-                    'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
             })
@@ -57,29 +56,19 @@ export class Confirmation extends Component {
         this.props.navigation.navigate('Wallet', { address: this.state.address, username: this.state.username });
     }
     faucet() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let address = this.state.address;
-            yield AsyncStorage.setItem('address', address);
-            const RequestBody = { 'address': address };
-            fetch('http://localhost/strato-api/eth/v1.2/faucet', {
-                method: 'POST',
-                body: JSON.stringify(RequestBody),
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            })
-                .then(response => response.json())
-                .then(json => {
-                console.log('faucted account for', json);
-                this.setState({
-                    hasBalance: true,
-                });
-            })
-                .catch(function (error) {
-                console.log('unable to faucet account', error);
-                throw error;
-            });
+        fetch('http://localhost/strato-api/eth/v1.2/faucet', {
+            method: 'POST',
+            body: `address=${this.state.address}`,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+        })
+            .then(function (response) {
+            console.log('fauceted account', response);
+            return response;
+        })
+            .catch(function (error) {
+            throw error;
         });
     }
     render() {

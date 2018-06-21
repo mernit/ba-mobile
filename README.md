@@ -18,8 +18,11 @@ Another thing to keep in mind is that the API doesn't yet support user authentic
 | Description           | Route   | Location  |
 | ------------- |:-------------:| -----:|
 | Create User      | `POST /users/{user}` | `src/screens/Confirmation` |
+| Faucet User      | `(STRATO-API) POST /faucet` | `src/screens/Confirmation` |
 | Deploy Contract      | `POST /users/{user}/{userAddress}/contract/{contractName}/{contractAddress}/call`      |   `src/screens/ContractBuilder` |
+| Call Contract Function      | `POST /users/{user}/{userAddress}/contract/{contractName}/{contractAddress}/call`      |   `src/screens/ContractBuilder` |
 | Get Blockchain Info | `GET /apex-api/status`      |    `src/components/Sidebar` |
+
 
 ## Prerequisites
 

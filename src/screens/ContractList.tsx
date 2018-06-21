@@ -1,45 +1,56 @@
 import React, { Component } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet, Text } from 'react-native';
 import { ListItem } from 'react-native-elements';
-
-// import Logger from '../services/Logger';
-
-import ContractService, {IContractListUpdated } from '../services/ContractService'
-import IStoreState from '../store/IStoreState';
-import { connect, Dispatch } from 'react-redux';
-import { ContractListUpdatedActionCreator } from '../actions/ContractActions';
-import { bindActionCreators } from 'redux';
-
-// import { List, ListItem } from 'react-native-elements';
 
 interface IProps {
     navigation: any,
-    ContractListUpdated: (contractList: Array<any>) => (dispatch: Dispatch<IStoreState>) => Promise<void>
-    contractList: Array<any>
 }
 
-export class ContractList extends Component<IProps> {
-  private contractService: ContractService;
+interface IState {
+  data: Array<any>,
+}
+
+export default class ContractList extends Component<IProps, IState> {
   constructor(props: IProps){
     super(props);
-
-    this.gotNewContractList = this.gotNewContractList.bind(this);
-    this.contractService = new ContractService({contractListUpdated: this.gotNewContractList});
-    this.contractService.StartMonitoring();
+    this.state = {
+      data: [],
+    }
   }
 
-  private async gotNewContractList(props: IContractListUpdated) {
-    await this.props.ContractListUpdated(props.contractList);
+  componentDidMount() {
+    this.getContracts();
+  }
+
+  getContracts() {
+      console.log('getting contract list...');
+      const blocURL = 'http://localhost/bloc/v2.2/contracts/';
+
+      fetch(blocURL, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json);
+        this.setState({
+          data: json,
+        });
+        console.log('got contracts!', this.state.data)
+      })
+      .catch(function (error) {
+        console.log('unable to get contracts', error);
+        throw error;
+      });
   }
 
   onTouchContract(contract: any) {
-    let address = contract.data.address;
+    let address = contract.address;
     console.log('got address', address)
-    this.props.navigation.navigate('ContractDetail', {address: address});
-  }
-
-  componentWillMount() {
-    console.log('is it working?')
+    this.props.navigation.navigate('ContractItem', {address: address});
   }
 
   renderItem = ({item}) => (
@@ -48,42 +59,31 @@ export class ContractList extends Component<IProps> {
       containerStyle={styles.contractListItem}      
       leftIcon={{name: 'place', color: "rgba(51, 51, 51, 0.8)"}}
       rightIcon={{name: 'chevron-right', color: "rgba(51, 51, 51, 0.8)"}}
-      title={item.data.address}      
+      title={item.data.address}  
       //subtitle={item.data.description}
     />
   );
 
   render() {
+    console.log(this.state.data)
     return (
       <View>
         <FlatList
-         data={this.props.contractList}
+         data={this.state.data}
          renderItem={this.renderItem}
          keyExtractor={item => item.id}
         />
+
+        {
+          this.state.data.length == 0 &&
+          <Text style={styles.null}>No contracts have been created yet</Text>
+        }
+
+
      </View>
     )
   }
 };
-
-
-// @ts-ignore
-function mapStateToProps(state: IStoreState): IProps { 
-  // @ts-ignore
-  return {
-    contractList: state.contractList
-  };
-}
-
-// @ts-ignore
-function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-  return {
-    ContractListUpdated: bindActionCreators(ContractListUpdatedActionCreator, dispatch),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContractList);
-
 
 const styles = StyleSheet.create({
   contractListItem:{
@@ -92,4 +92,9 @@ const styles = StyleSheet.create({
     minHeight: 80,
     maxHeight: 80
   },
+  null: {
+    fontSize: 22,
+    marginTop: 25,
+    alignSelf: 'center',
+  }
 });

@@ -30,7 +30,7 @@ export class Wallet extends Component {
             .then(json => {
             console.log('got balance', json);
             this.setState({
-                accountInfo: json,
+                accountInfo: json[0].balance,
                 isLoading: false,
             });
         })
@@ -59,7 +59,7 @@ export class Wallet extends Component {
                         " Your Balance is ",
                         accountInfo,
                         " "),
-                    React.createElement(Button, { onPress: this.createContract, title: 'Create a Contract' }))));
+                    React.createElement(Button, { onPress: () => { this.props.navigation.navigate('ContractBuilder'); }, title: 'Create a Contract' }))));
     }
 }
 ;
