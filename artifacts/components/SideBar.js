@@ -62,8 +62,8 @@ export class SideBar extends Component {
                 containerStyle: styles.navItem, key: 'Contracts', title: 'Contracts', leftIcon: { name: 'lock', color: "rgba(51, 51, 51, 0.8)" }, onPress: () => {
                     this.resetNavigation('ContractList');
                 } }),
-            React.createElement(ListItem, { containerStyle: styles.navItem, key: 'Wallet', title: 'Wallet', leftIcon: { name: 'fingerprint', color: "rgba(51, 51, 51, 0.8)" }, onPress: () => {
-                    this.resetNavigation('Wallet');
+            React.createElement(ListItem, { containerStyle: styles.navItem, key: 'LifeCycle', title: 'LifeCycle', leftIcon: { name: 'fingerprint', color: "rgba(51, 51, 51, 0.8)" }, onPress: () => {
+                    this.resetNavigation('LifeCycle');
                 } }),
             React.createElement(ListItem, { containerStyle: styles.navItem, key: 'ContractBuilder', title: 'ContractBuilder', leftIcon: { name: 'description', color: "rgba(51, 51, 51, 0.8)" }, onPress: () => {
                     this.resetNavigation('ContractBuilder');

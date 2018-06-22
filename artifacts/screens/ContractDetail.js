@@ -25,7 +25,7 @@ export default class ContractDetail extends Component {
         this.callContract = this.callContract.bind(this);
     }
     componentDidMount() {
-        this.callContract();
+        //this.callContract();
         this.getState();
         // GET CONTRACT STATE VARIABLES 
         // USER CAN MODIFY STATE VARIABLES IN INPUT FIELDS
@@ -61,14 +61,14 @@ export default class ContractDetail extends Component {
     // CALL CONTRACT 
     callContract() {
         const blocURL = 'http://localhost/bloc/v2.2/users/';
-        const username = 'David';
+        const username = 'Zabar';
         const password = "1234";
         const value = "429";
-        const methodName = 'set';
-        const address = '9d5cefae2da4fea135b298626879728980e931d5';
-        const contractAddress = '4f77a0e0f5993dbbc02071316bd0f73e026da43f';
-        const callArgs = { x: value };
-        fetch(blocURL + username + '/' + address + '/contract/Jok/' + contractAddress + '/call', {
+        const methodName = 'getItem';
+        const address = '87168271eb89f6d0282725681f7b724bde31c4f0';
+        const contractAddress = 'b823216ffb44fcea8eb4e2a53d7275eee8435aef';
+        const callArgs = { uuid: value };
+        fetch(blocURL + username + '/' + address + '/contract/SupplyChain/' + contractAddress + '/call?resolve', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -86,7 +86,7 @@ export default class ContractDetail extends Component {
             console.log(json);
             this.setState({
                 hash: json.hash,
-                status: json.status,
+                status: json.data.contents[1],
             });
         })
             .catch(function (error) {
@@ -95,21 +95,23 @@ export default class ContractDetail extends Component {
     }
     // TODO: FIGURE OUT WHY 405 IS RETURNED 
     getState() {
-        let blocURL = 'http://localhost/bloc/v2.2/contracts/';
-        let contractName = 'ProjectManager';
-        let contractAddress = '04209bdc13dd0357b7842282644c087cf6aca952';
-        const URL = blocURL + contractName + '/' + contractAddress + '/state';
-        fetch(URL, {
+        const blocURL = 'http://localhost/bloc/v2.2/contracts/SupplyChain';
+        const contractAddress = 'b823216ffb44fcea8eb4e2a53d7275eee8435aef';
+        fetch(blocURL + +contractAddress + '/state', {
             method: 'POST',
             headers: {
-                'accept': 'application/json',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             },
         })
-            .then(function (response) {
-            console.log('got state', response);
+            .then(response => response.json())
+            .then(json => {
+            console.log(json);
+            this.setState({
+                hash: json.itemIndex,
+            });
         })
             .catch(function (error) {
-            console.log('error!', URL);
             throw error;
         });
     }

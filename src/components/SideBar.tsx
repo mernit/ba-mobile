@@ -99,12 +99,12 @@ export class SideBar extends Component<IProps, IState> {
 
                 <ListItem
                   containerStyle={styles.navItem}
-                  key='Wallet'
-                  title='Wallet'
+                  key='LifeCycle'
+                  title='LifeCycle'
                   leftIcon={{name: 'fingerprint', color: "rgba(51, 51, 51, 0.8)"}}
 
                   onPress={ () => {
-                    this.resetNavigation('Wallet');
+                    this.resetNavigation('LifeCycle');
                   }} 
                 />
 

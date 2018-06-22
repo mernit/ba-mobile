@@ -69,21 +69,47 @@ export class Confirmation extends Component<IProps, IState> {
 
     async compileContract(){
       const src = 
-      `contract ${this.state.contractName} {
-        uint storedData;
+      `contract SupplyChain {
       
-        function SimpleStorage() {
-          storedData = 1;
-        }
       
-        function set(uint x) {
-          storedData = x;
-        }
+          struct Item {
+              uint uuid;
+              string location;
+          }
+          
+          Item[] public items;
       
-        function get() constant returns (uint) {
-          return storedData;
-        }
+          mapping(uint => Item) public uuids;
+      
+          function addItem(uint uuid, string location) public returns (uint) {
+              // require modifier here
+              items.push(Item(uuid, location));
+          }
+          
+          function getItem(uint index) public view returns (uint, string) {
+              return (items[index].uuid, items[index].location);
+          } 
+      
+          function getItemCount() public constant returns(uint) {
+              return items.length;
+          }
       }`;
+      // const src = 
+      // `contract ${this.state.contractName} {
+      //   uint storedData;
+      
+      //   function SimpleStorage() {
+      //     storedData = 1;
+      //   }
+      
+      //   function set(uint x) {
+      //     storedData = x;
+      //   }
+      
+      //   function get() constant returns (uint) {
+      //     return storedData;
+      //   }
+      // }`;
       const blocURL = 'http://localhost/bloc/v2.2/users/';
       const username = this.state.username;
       const password = this.state.password;

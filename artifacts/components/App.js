@@ -14,8 +14,9 @@ import Confirmation from '../screens/Confirmation';
 import ContractList from '../screens/ContractList';
 import ContractDetail from '../screens/ContractDetail';
 // import ContractItem from '../screens/ContractItem'
+import LifeCycle from '../screens/LifeCycle';
 import ContractBuilder from '../screens/ContractBuilder';
-import Wallet from '../screens/Wallet';
+// import Wallet from '../screens/Wallet';
 import Signup from '../screens/Signup';
 import SideBar from '../components/SideBar';
 import Camera from '../screens/Camera';
@@ -34,7 +35,8 @@ const InternalStack = StackNavigator({
             headerLeft: React.createElement(Icon, { name: "keyboard-arrow-left", size: 30, color: '#ffffff', onPress: () => navigation.navigate('Map') })
         })
     },
-    Wallet: { screen: Wallet },
+    LifeCycle: { screen: LifeCycle },
+    //Wallet: {screen: Wallet },
     // ContractItem: { screen: ContractItem},
     Camera: { screen: Camera },
     ContractList: { screen: ContractList },

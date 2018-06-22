@@ -1,4 +1,4 @@
-pragma solidity ^0.4.6;
+pragma solidity ^0.4.8;
 
 
 contract SupplyChain {
@@ -7,18 +7,35 @@ contract SupplyChain {
     struct Item {
         uint uuid;
         string location;
+        uint timestamp; 
     }
     
-    Item[] public items;
+    Item[] public itemIndex;
 
-    mapping(uint => Item) public uuids;
+    mapping(uint => Item) public items;
 
-    function newItem(uint uuid, string location) public {
-        // require modifier here
-        items.push(Item(uuid, location));
+    function addItem(uint uuid, string location, uint timestamp) public returns (uint) {
+        timestamp = now;
+        items[uuid] = Item(uuid, location, timestamp);
+        itemIndex.push(Item(uuid, location, timestamp));
+    }
+
+    function scanItem(uint uuid, string location, uint timestamp) public returns (bool success) {
+        timestamp = now;
+        items[uuid].location = location;
+        items[uuid].timestamp = timestamp;
+        return true;
+    }
+
+    function getLocation(uint uuid) public returns (string) {
+        return items[uuid].location;
     }
     
-    function getItem(uint uuid) public view returns (string location) {
-        return items[uuid].uuid;
+    function getItemInfo(uint uuid) public returns (uint, string, uint) {
+        return (items[uuid].uuid, items[uuid].location, items[uuid].timestamp);
     } 
+
+    function getItemCount() public constant returns(uint count) {
+        return itemIndex.length;
+    }
 }
