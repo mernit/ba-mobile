@@ -75,6 +75,7 @@ export class SideBar extends Component {
             React.createElement(Text, { style: styles.apex },
                 "Hash: ",
                 apexHash),
+            React.createElement(Text, { style: styles.poweredBy }, "Powered by BlockApps STRATO"),
             "}"));
     }
 }
@@ -93,7 +94,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(SideBar);
 const styles = StyleSheet.create({
     view: {
         marginTop: 20,
-        flex: 1
+        flex: 1,
     },
     apexHeader: {
         left: 20,
@@ -112,6 +113,10 @@ const styles = StyleSheet.create({
         paddingTop: 30,
         paddingBottom: 30,
         borderBottomColor: "rgba(51, 51, 51, 0.2)",
+    },
+    poweredBy: {
+        marginTop: 120,
+        alignSelf: 'center',
     }
 });
 //# sourceMappingURL=SideBar.js.map

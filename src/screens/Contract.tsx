@@ -18,13 +18,15 @@ interface IState {
     value: string,
     method: string,
     args: string,
-    hash: string,
+    location: string,
+    timestamp: string,
     response: any,
     stateResponse: Array<any>,
+    currentLocation: any,
 
 }
 
-export default class ContractItem extends Component<IProps, IState> {
+export default class Contract extends Component<IProps, IState> {
   constructor(props: IProps){
     super(props);
 
@@ -32,22 +34,24 @@ export default class ContractItem extends Component<IProps, IState> {
         stateResponse: [],
         loading: true,
         storedData: '',
-        address: '',
+        address: this.props.navigation.getParam('address'),
         contractAddress: '',
         contractName: '',
         status: '',
         value: '',
         method: '',
         args: '',
-        hash: '',
+        location: '',
+        timestamp: '',
         response: [],
+        currentLocation: '',
         username: this.props.navigation.getParam('username'), // get uuid or address from camera
         password: this.props.navigation.getParam('password'),
     }
 
     this.componentDidMount = this.componentDidMount.bind(this);
-    this.getContract = this.getContract.bind(this);
     this.callContract = this.callContract.bind(this);
+    this.getState = this.getState.bind(this);
     }
 
     componentWillMount() {
@@ -61,36 +65,6 @@ export default class ContractItem extends Component<IProps, IState> {
       // CALL CONTRACT AND PUSH UPDATED STATE VARIABLES
 
     }
-
-  getContract(){
-    const blocURL = 'localhost';
-    const contractName = this.state.contractName;
-    const contractAddress = this.state.contractAddress;
-
-    fetch(
-        blocURL + 
-        '/contracts' + 
-        contractName + 
-        contractAddress + 
-        '/state?length=', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-    })
-    .then(response => response.json())
-    .then(json => {
-      console.log(json);
-      this.setState({
-        storedData: json.storedData,
-      });
-    })
-    .catch(function (error) {
-      console.log('unable to call contract', error);
-      throw error;
-    });
-}
 
   // CALL CONTRACT 
 
@@ -124,7 +98,6 @@ export default class ContractItem extends Component<IProps, IState> {
     .then(json => {
       console.log(json);
       this.setState({
-        hash: json.hash,
         status: json.data.contents[1],
       });
     })
@@ -133,24 +106,21 @@ export default class ContractItem extends Component<IProps, IState> {
     });
 }
 
-
-// TODO: FIGURE OUT WHY 405 IS RETURNED 
-
 getState() {
-  const blocURL = 'http://localhost/bloc/v2.2/contracts/SupplyChain/b823216ffb44fcea8eb4e2a53d7275eee8435aef/state?name=itemIndex';
+  const blocURL = `http://localhost/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
   fetch(blocURL, {
     method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
   })
-  .then(function (response) {
-    console.log('got it', response);
-    return response;
+  .then(response => response.json())
+  .then(json => {
+    console.log(json);
+    this.setState({
+      location: json.itemIndex[0].location,
+      currentLocation: json.itemIndex.slice(-1)[0].location,
+      timestamp: json.itemIndex[0].timestamp,
+    });
   })
   .catch(function (error) {
-    console.log('no luck', error);
     throw error;
   });
 }
@@ -161,18 +131,34 @@ getState() {
       return (
         <View style={styles.view}>
           <Card containerStyle={styles.card}>
-            <Text style={styles.title}>Success!</Text>
+          
+          
+            <Text style={styles.title}>VERIFIED</Text>
               <Icon 
-                name='done'
+                iconStyle={styles.icon}
+                name='check-circle'
+                size={72}
                 color='#00aced' 
                 />
-            <Text style={styles.title}>{this.state.status}</Text>
-            <Text style={styles.hash}>{this.state.hash}</Text>
+            <Text style={styles.subtitle}>Origin Location</Text>
+            <Text style={styles.location}>{this.state.location}</Text>
+            <Text style={styles.subtitle}>Current Location</Text>
+            <Text style={styles.currentLocation}>{this.state.currentLocation}</Text>
+            <Text style={styles.subtitle}>Timestamp</Text>
+            <Text style={styles.hash}>{this.state.timestamp}</Text>
 
               </Card>
-                <Button containerStyle={styles.buttonSignup}
-                    onPress={() => { this.props.navigation.navigate('Signup') } }
-                    title='Return to Contracts'
+                <Button 
+                  icon={
+                    <Icon
+                      name='link'
+                      size={25}
+                      color='white'
+                    />
+                  }
+                    containerStyle={styles.buttonSignup}
+                    onPress={() => { this.props.navigation.navigate('Camera') } }
+                    title='CHECK-IN'
                 />
   
               </View>
@@ -204,21 +190,44 @@ getState() {
       alignItems: 'center',
       backgroundColor: '#ffffff'
     },
-    hash: {
-      fontSize: 16,
+    icon: {
+      alignSelf: 'center',
     },
     card: {
-      height: '50%',
-      width: '75%',
+      flexDirection: 'column',
+      height: '80%',
+      width: '90%',
       borderRadius: 1,
       marginBottom: 30,
       borderColor: 'rgba(53,53,53,0.1)',
     },
     title: {
       alignSelf: 'center',
-      fontSize: 20,
+      fontSize: 36,
       paddingTop: 20,
       paddingBottom: 20,
+    },
+    subtitle: {
+      alignSelf: 'center',
+      paddingTop: 30,
+      fontSize: 14,
+    },
+    location: {
+      alignSelf: 'center',
+      padding: 10,
+      fontSize: 22,
+    },
+    currentLocation: {
+      alignSelf: 'center',
+      padding: 10,
+      fontSize: 22,
+      color: 'blue',
+
+    },
+    hash: {
+      alignSelf: 'center',
+      padding: 10,
+      fontSize: 22,
     },
     loginCard: {
       flex: 6,
@@ -236,30 +245,13 @@ getState() {
       alignSelf: 'center'
     },
     buttonSignup: {
-      backgroundColor: "rgba(92, 99,216, 1)",
       width: 300,
       height: 45,
-      borderColor: "transparent",
-      borderWidth: 0,
-      borderRadius: 3,
     },
-    buttonLogin: {
-      backgroundColor: "rgba(92, 99,216, 1)",
-      width: 100,
-      height: 45,
-      borderColor: "transparent",
-      borderWidth: 0,
-      borderRadius: 3,
-      alignSelf: 'center',
-      marginTop: 20
-    },
-  
-  
     inputPadding:{
       marginTop: 20,
       marginLeft: 15
     },
-  
     containerPadding: {
       borderColor:'#333333',
       borderTopWidth: 1,

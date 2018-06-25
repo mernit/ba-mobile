@@ -6,18 +6,48 @@ export default class LifeCycle extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            location: '',
+            timestamp: '',
+            name: '',
+            status: '',
             data: [
-                { time: '09:00', title: 'Archery Training', description: 'The Beginner Archery and Beginner Crossbow course does not require you to bring any equipment, since everything you need will be provided for the course. ', lineColor: '#009688' },
-                { time: '10:45', title: 'Play Badminton', description: 'Badminton is a racquet sport played using racquets to hit a shuttlecock across a net.' },
-                { time: '12:00', title: 'Lunch' },
-                { time: '14:00', title: 'Watch Soccer', description: 'Team sport played between two teams of eleven players with a spherical ball. ', lineColor: '#009688' },
-                { time: '16:30', title: 'Go to Fitness center', description: 'Look out for the Best Gym & Fitness Centers around me :)' }
+                { time: '09:00', title: 'Manufacturer', description: 'Confirmation of goods dispatched to shipper', lineColor: '#009688' },
+                { time: '10:45', title: 'Warehouse - Receiving', description: 'Confirmation of authenticity' },
+                { time: '12:00', title: 'Warehouse - Pack & Pick', description: 'Update which unit has been picked from which carton' },
+                { time: '14:00', title: 'Warehouse - Ship', description: 'Confirmation that box has been dispatched', lineColor: '#009688' },
+                { time: '16:30', title: 'Destination', description: 'Confirmation of delivery' }
             ]
         };
+    }
+    componentDidMount() {
+        this.getState();
+    }
+    getState() {
+        const blocURL = 'http://localhost/bloc/v2.2/contracts/SupplyChain/b823216ffb44fcea8eb4e2a53d7275eee8435aef/state?name=itemIndex';
+        fetch(blocURL, {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then(json => {
+            console.log(json);
+            this.setState({
+                location: json.itemIndex[0].location,
+                timestamp: json.itemIndex[0].timestamp,
+            });
+        })
+            .catch(function (error) {
+            throw error;
+        });
     }
     render() {
         return (React.createElement(View, { style: styles.container },
             React.createElement(Text, { style: styles.text }, "Manufacturing Lifecycle"),
+            React.createElement(Text, { style: styles.text },
+                "Package Location: ",
+                this.state.location),
+            React.createElement(Text, { style: styles.text },
+                "Checked In: ",
+                this.state.timestamp),
             React.createElement(Timeline, { style: styles.list, data: this.state.data, circleSize: 20, circleColor: 'rgb(45,156,219)', lineColor: 'rgb(45,156,219)', timeContainerStyle: { minWidth: 52, marginTop: -5 }, timeStyle: { textAlign: 'center', backgroundColor: '#ff9797', color: 'white', padding: 5, borderRadius: 13 }, descriptionStyle: { color: 'gray' }, innerCircle: 'dot', options: {
                     style: { paddingTop: 5 }
                 } }),

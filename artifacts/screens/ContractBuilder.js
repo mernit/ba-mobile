@@ -46,29 +46,45 @@ export class Confirmation extends Component {
     }
     compileContract() {
         return __awaiter(this, void 0, void 0, function* () {
-            const src = `contract SupplyChain {
+            const src = `pragma solidity ^0.4.8;
+
+
+      contract SupplyChain {
       
       
           struct Item {
               uint uuid;
               string location;
+              uint timestamp; 
           }
           
-          Item[] public items;
+          Item[] public itemIndex;
       
-          mapping(uint => Item) public uuids;
+          mapping(uint => Item) public items;
       
-          function addItem(uint uuid, string location) public returns (uint) {
-              // require modifier here
-              items.push(Item(uuid, location));
+          function addItem(uint uuid, string location, uint timestamp) public returns (uint) {
+              timestamp = now;
+              items[uuid] = Item(uuid, location, timestamp);
+              itemIndex.push(Item(uuid, location, timestamp));
+          }
+      
+          function scanItem(uint uuid, string location, uint timestamp) public returns (bool success) {
+              timestamp = now;
+              items[uuid].location = location;
+              items[uuid].timestamp = timestamp;
+              return true;
+          }
+      
+          function getLocation(uint uuid) public returns (string) {
+              return items[uuid].location;
           }
           
-          function getItem(uint index) public view returns (uint, string) {
-              return (items[index].uuid, items[index].location);
+          function getItemInfo(uint uuid) public returns (uint, string, uint) {
+              return (items[uuid].uuid, items[uuid].location, items[uuid].timestamp);
           } 
       
-          function getItemCount() public constant returns(uint) {
-              return items.length;
+          function getItemCount() public constant returns(uint count) {
+              return itemIndex.length;
           }
       }`;
             // const src = 
@@ -103,8 +119,10 @@ export class Confirmation extends Component {
                 console.log(json);
                 this.setState({
                     contractName: json.contractName,
+                    address: json.address,
                     codeHash: json.codeHash,
                 });
+                this.props.navigation.navigate('ContractDetail', { address: this.state.address });
             })
                 .catch(function (error) {
                 console.log('unable to create contract', error);
@@ -120,8 +138,9 @@ export class Confirmation extends Component {
                 React.createElement(Text, { style: styles.header }, " Contract Builder "),
                 React.createElement(Input, { placeholder: 'Username', leftIcon: React.createElement(Icon, { name: 'user', size: 20, color: '#333333' }), containerStyle: styles.inputPadding, onChangeText: (username) => this.setState({ username }), value: this.state.username }),
                 React.createElement(Input, { placeholder: 'Contract Name', leftIcon: React.createElement(Icon, { name: 'info', size: 20, color: '#333333' }), containerStyle: styles.inputPadding, onChangeText: (contractName) => this.setState({ contractName }), value: this.state.contractName }),
-                React.createElement(Input, { placeholder: 'Password', leftIcon: React.createElement(Icon, { name: 'lock', size: 20, color: '#333333' }), secureTextEntry: true, containerStyle: styles.inputPadding, onChangeText: (password) => this.setState({ password }), value: this.state.password }),
-                React.createElement(Button, { containerStyle: styles.buttonLogin, onPress: this.createEscrowContract, title: 'Deploy Contract' }),
+                React.createElement(Input, { placeholder: 'Password', leftIcon: React.createElement(Icon, { name: 'lock', size: 20, color: '#333333' }), secureTextEntry: true, containerStyle: styles.inputPadding, onChangeText: (password) => this.setState({ password }), value: this.state.password })),
+            React.createElement(View, null,
+                React.createElement(Button, { containerStyle: styles.buttonSignup, icon: React.createElement(Icon, { name: 'lock', size: 20, color: 'white' }), onPress: this.createEscrowContract, title: 'DEPLOY CONTRACT' }),
                 React.createElement(Toast, { ref: "toast", style: { backgroundColor: '#333333' }, position: 'top', positionValue: 300, fadeInDuration: 750, fadeOutDuration: 1000, opacity: 0.8, textStyle: { color: 'white' } }))));
     }
 }
@@ -139,6 +158,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(Confirmation);
 const styles = StyleSheet.create({
     view: {
         padding: 10,
+        height: '100%',
         flex: 1,
         alignItems: 'center',
         backgroundColor: '#ffffff'
@@ -156,22 +176,10 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     buttonSignup: {
-        backgroundColor: "rgba(92, 99,216, 1)",
+        alignSelf: 'center',
+        marginBottom: 30,
         width: 300,
         height: 45,
-        borderColor: "transparent",
-        borderWidth: 0,
-        borderRadius: 3,
-    },
-    buttonLogin: {
-        backgroundColor: "rgba(92, 99,216, 1)",
-        width: 100,
-        height: 45,
-        borderColor: "transparent",
-        borderWidth: 0,
-        borderRadius: 3,
-        alignSelf: 'center',
-        marginTop: 20
     },
     inputPadding: {
         marginTop: 20,

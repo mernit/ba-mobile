@@ -50,9 +50,9 @@ export default class ContractDetail extends Component<IProps, IState> {
     this.callContract = this.callContract.bind(this);
     }
 
-    componentDidMount() {
-      //this.callContract();
+    componentWillMount() {
       this.getState();
+      // this.callContract();
 
       // GET CONTRACT STATE VARIABLES 
 
@@ -98,11 +98,14 @@ export default class ContractDetail extends Component<IProps, IState> {
     const blocURL = 'http://localhost/bloc/v2.2/users/';
     const username = 'Zabar';
     const password = "1234";
-    const value = "429";
-    const methodName = 'getItem';
+    const methodName = 'scanItem';
     const address = '87168271eb89f6d0282725681f7b724bde31c4f0';
     const contractAddress = 'b823216ffb44fcea8eb4e2a53d7275eee8435aef';
-    const callArgs = {uuid: value};
+    const callArgs = {
+      location: 'riverdale',
+      uuid: '123456789',
+      timestamp: '1142',
+    };
     
     fetch(blocURL + username + '/' + address + '/contract/SupplyChain/' + contractAddress + '/call?resolve', {
       method: 'POST',
@@ -134,24 +137,20 @@ export default class ContractDetail extends Component<IProps, IState> {
 // TODO: FIGURE OUT WHY 405 IS RETURNED 
 
 getState() {
-  const blocURL = 'http://localhost/bloc/v2.2/contracts/SupplyChain';
-  const contractAddress = 'b823216ffb44fcea8eb4e2a53d7275eee8435aef';
-  
-  fetch(blocURL + + contractAddress + '/state', {
-    method: 'POST',
+  const blocURL = 'http://localhost/bloc/v2.2/contracts/SupplyChain/b823216ffb44fcea8eb4e2a53d7275eee8435aef/state?name=itemIndex';
+  fetch(blocURL, {
+    method: 'GET',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
   })
-  .then(response => response.json())
-  .then(json => {
-    console.log(json);
-    this.setState({
-      hash: json.itemIndex,
-    });
+  .then(function (response) {
+    console.log('got it', response);
+    return response;
   })
   .catch(function (error) {
+    console.log('no luck', error);
     throw error;
   });
 }
@@ -159,7 +158,6 @@ getState() {
   // END CALL CONTRACT
 
     render() {
-      const response = this.state.response;
       return (
         <View style={styles.view}>
           <Card containerStyle={styles.card}>
@@ -170,7 +168,6 @@ getState() {
                 />
             <Text style={styles.title}>{this.state.status}</Text>
             <Text style={styles.hash}>{this.state.hash}</Text>
-            <Text style={styles.hash}>{response.projects}</Text>
 
               </Card>
                 <Button containerStyle={styles.buttonSignup}
@@ -180,8 +177,8 @@ getState() {
   
               </View>
            
-                )
-    }
+              )
+        }
   };
 
 

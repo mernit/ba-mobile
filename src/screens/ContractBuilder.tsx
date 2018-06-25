@@ -69,29 +69,45 @@ export class Confirmation extends Component<IProps, IState> {
 
     async compileContract(){
       const src = 
-      `contract SupplyChain {
+      `pragma solidity ^0.4.8;
+
+
+      contract SupplyChain {
       
       
           struct Item {
               uint uuid;
               string location;
+              uint timestamp; 
           }
           
-          Item[] public items;
+          Item[] public itemIndex;
       
-          mapping(uint => Item) public uuids;
+          mapping(uint => Item) public items;
       
-          function addItem(uint uuid, string location) public returns (uint) {
-              // require modifier here
-              items.push(Item(uuid, location));
+          function addItem(uint uuid, string location, uint timestamp) public returns (uint) {
+              timestamp = now;
+              items[uuid] = Item(uuid, location, timestamp);
+              itemIndex.push(Item(uuid, location, timestamp));
+          }
+      
+          function scanItem(uint uuid, string location, uint timestamp) public returns (bool success) {
+              timestamp = now;
+              items[uuid].location = location;
+              items[uuid].timestamp = timestamp;
+              return true;
+          }
+      
+          function getLocation(uint uuid) public returns (string) {
+              return items[uuid].location;
           }
           
-          function getItem(uint index) public view returns (uint, string) {
-              return (items[index].uuid, items[index].location);
+          function getItemInfo(uint uuid) public returns (uint, string, uint) {
+              return (items[uuid].uuid, items[uuid].location, items[uuid].timestamp);
           } 
       
-          function getItemCount() public constant returns(uint) {
-              return items.length;
+          function getItemCount() public constant returns(uint count) {
+              return itemIndex.length;
           }
       }`;
       // const src = 
@@ -131,8 +147,10 @@ export class Confirmation extends Component<IProps, IState> {
         console.log(json);
         this.setState({
           contractName: json.contractName,
+          address: json.address,
           codeHash: json.codeHash,
         });
+        this.props.navigation.navigate('ContractDetail', {address: this.state.address})
       })
       .catch(function (error) {
         console.log('unable to create contract', error);
@@ -194,11 +212,20 @@ export class Confirmation extends Component<IProps, IState> {
               onChangeText={(password) => this.setState({password})}
               value={this.state.password}
               />
+              </View>
   
-              <Button containerStyle={styles.buttonLogin}
-                    onPress={this.createEscrowContract}
-                    title='Deploy Contract'
-                />
+              <View>
+              <Button containerStyle={styles.buttonSignup}
+            icon={
+              <Icon
+                name='lock'
+                size={20}
+                color='white'
+              />
+            }
+            onPress={this.createEscrowContract}
+            title='DEPLOY CONTRACT'
+        />
   
                
               <Toast ref="toast"
@@ -248,6 +275,7 @@ export class Confirmation extends Component<IProps, IState> {
   const styles = StyleSheet.create({
     view: {
       padding:10,
+      height: '100%',
       flex: 1,
       alignItems: 'center',
       backgroundColor: '#ffffff'
@@ -266,30 +294,15 @@ export class Confirmation extends Component<IProps, IState> {
       alignSelf: 'center'
     },
     buttonSignup: {
-      backgroundColor: "rgba(92, 99,216, 1)",
+      alignSelf: 'center',
+      marginBottom: 30,
       width: 300,
       height: 45,
-      borderColor: "transparent",
-      borderWidth: 0,
-      borderRadius: 3,
     },
-    buttonLogin: {
-      backgroundColor: "rgba(92, 99,216, 1)",
-      width: 100,
-      height: 45,
-      borderColor: "transparent",
-      borderWidth: 0,
-      borderRadius: 3,
-      alignSelf: 'center',
-      marginTop: 20
-    },
-  
-  
     inputPadding:{
       marginTop: 20,
       marginLeft: 15
     },
-  
     containerPadding: {
       borderColor:'#333333',
       borderTopWidth: 1,

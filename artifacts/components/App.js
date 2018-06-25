@@ -16,6 +16,7 @@ import ContractDetail from '../screens/ContractDetail';
 // import ContractItem from '../screens/ContractItem'
 import LifeCycle from '../screens/LifeCycle';
 import ContractBuilder from '../screens/ContractBuilder';
+import Contract from '../screens/Contract';
 // import Wallet from '../screens/Wallet';
 import Signup from '../screens/Signup';
 import SideBar from '../components/SideBar';
@@ -30,7 +31,7 @@ import ContractService from '../services/ContractService';
 const InternalStack = StackNavigator({
     Confirmation: { screen: Confirmation,
         navigationOptions: ({ navigation }) => ({
-            headerStyle: { backgroundColor: 'rgba(44,55,71,1.0)', paddingLeft: 10 },
+            headerStyle: { backgroundColor: '#293742', paddingLeft: 10 },
             title: navigation.indexs,
             headerLeft: React.createElement(Icon, { name: "keyboard-arrow-left", size: 30, color: '#ffffff', onPress: () => navigation.navigate('Map') })
         })
@@ -38,6 +39,7 @@ const InternalStack = StackNavigator({
     LifeCycle: { screen: LifeCycle },
     //Wallet: {screen: Wallet },
     // ContractItem: { screen: ContractItem},
+    Contract: { screen: Contract },
     Camera: { screen: Camera },
     ContractList: { screen: ContractList },
     ContractBuilder: { screen: ContractBuilder },
