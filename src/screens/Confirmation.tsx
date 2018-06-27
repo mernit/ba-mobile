@@ -1,127 +1,169 @@
 import React, { Component } from 'react';
-import { Button, View, StyleSheet, Text } from 'react-native';
-// import * as HttpStatus from 'http-status-codes';
-
-// import Logger from '../services/Logger';
-
-import IStoreState from '../store/IStoreState';
-import { connect, Dispatch } from 'react-redux';
-
-// import { List, ListItem } from 'react-native-elements';
+import { View, StyleSheet, Text } from 'react-native';
+import { Icon, Button, Card } from 'react-native-elements';
 
 interface IProps {
     navigation: any,
 }
 
 interface IState {
+    loading: boolean,
     username: string,
     password: string, 
-    hasBalance: boolean,
-    accountInfo: any,
+    contractAddress: string,
+    contractName: string,
     address: any,
-    isLoading: boolean,
+    storedData: string,
+    status: string,
+    value: string,
+    method: string,
+    args: string,
+    location: string,
+    timestamp: string,
+    response: any,
+    stateResponse: Array<any>,
+    currentLocation: any,
+    hash: string,
+
 }
 
-export class Confirmation extends Component<IProps, IState> {
+export default class Confirmation extends Component<IProps, IState> {
   constructor(props: IProps){
     super(props);
 
     this.state = {
-        address: '',
-        accountInfo: {},
-        hasBalance: false,
-        isLoading: true,
-        username: this.props.navigation.getParam('username'),
+        stateResponse: [],
+        loading: true,
+        storedData: '',
+        hash: this.props.navigation.getParam('hash'),
+        address: this.props.navigation.getParam('address'),
+        contractAddress: '',
+        contractName: '',
+        status: this.props.navigation.getParam('status'),
+        value: '',
+        method: '',
+        args: '',
+        location: '',
+        timestamp: '',
+        response: [],
+        currentLocation: '',
+        username: this.props.navigation.getParam('username'), // get uuid or address from camera
         password: this.props.navigation.getParam('password'),
     }
 
-    this.faucet = this.faucet.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
-    this.createUser = this.createUser.bind(this);
+    this.callContract = this.callContract.bind(this);
+    this.getState = this.getState.bind(this);
     }
 
-    componentDidMount() {
-      this.createUser()
+    componentWillMount() {
+      if(!this.state.hash)
+      this.getState();
+      // this.callContract();
+
+      // GET CONTRACT STATE VARIABLES 
+
+      // USER CAN MODIFY STATE VARIABLES IN INPUT FIELDS
+
+      // CALL CONTRACT AND PUSH UPDATED STATE VARIABLES
+
     }
 
-    async createUser(){
-      let password = this.state.password;
-      fetch('http://localhost/bloc/v2.2/users/' + this.state.username, {
-        method: 'POST',
-        body: JSON.stringify(password),
-        headers: {
-          'Content-Type': 'application/json'
-        },
+  // CALL CONTRACT 
+
+  callContract() {
+    const blocURL = 'http://tdlwv3y2cp.eastus2.cloudapp.azure.com/bloc/v2.2/users/';
+    const username = 'Zabar';
+    const password = "1234";
+    const methodName = 'scanItem';
+    const address = '87168271eb89f6d0282725681f7b724bde31c4f0';
+    const contractAddress = 'b823216ffb44fcea8eb4e2a53d7275eee8435aef';
+    const callArgs = {
+      location: 'riverdale',
+      uuid: '123456789',
+      timestamp: '1142',
+    };
+    
+    fetch(blocURL + username + '/' + address + '/contract/SupplyChain/' + contractAddress + '/call?resolve', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        password: password,
+        method: methodName,
+        value: "0",
+        args: callArgs
       })
-      .then(response => response.json())
-      .then(json => {
-        console.log(json);
-        this.setState({
-          address: json,
-          isLoading: false,
-        });
-        this.faucet()
-      })
-      .catch(function (error) {
-        console.log('unable to create user', error);
-        throw error;
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(json);
+      this.setState({
+        status: json.data.contents[1],
       });
-  }
+    })
+    .catch(function (error) {
+      throw error;
+    });
+}
 
-    viewWallet() {
-      this.props.navigation.navigate('Wallet', {address: this.state.address, username: this.state.username});
-    }
+getState() {
+  const blocURL = `http://localhost/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
+  fetch(blocURL, {
+    method: 'GET',
+  })
+  .then(response => response.json())
+  .then(json => {
+    console.log(json);
+    this.setState({
+      location: json.itemIndex[0].location,
+      currentLocation: json.itemIndex.slice(-1)[0].location,
+      timestamp: json.itemIndex[0].timestamp,
+    });
+  })
+  .catch(function (error) {
+    throw error;
+  });
+}
 
-    faucet() {
-      fetch('http://localhost/strato-api/eth/v1.2/faucet', {
-        method: 'POST',
-        body: `address=${this.state.address}`,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-      })
-      .then(function (response) {
-        console.log('fauceted account', response);
-        return response;
-      })
-      .catch(function (error) {
-        throw error;
-      })
-  }
-  
-        render() {
-          return (
-            <View style={styles.view}>
-          
-      
-            { !this.state.isLoading &&
-              <View style={styles.view}>
-                  <Text style={styles.containerPadding}>Welcome to STRATO {this.state.username}!</Text>
-                  <Text style={styles.containerPadding}>{this.state.address} </Text>
-                  <Button
-                  onPress={() => { this.props.navigation.navigate('Wallet', {address: this.state.address, username: this.state.username}) } }
-                  title='View Wallet'
+  // END CALL CONTRACT
+
+    render() {
+      return (
+        <View style={styles.view}>
+          <Card containerStyle={styles.card}>       
+            <Text style={styles.title}>
+            {this.state.hash? 'PENDING' : 'UNKNOWN'}
+            </Text>
+            <Icon 
+              iconStyle={styles.icon}
+              name={this.state.hash ? 'check-circle' : 'info'}
+              size={72}
+              color={this.state.hash ? 'green' : 'orange'}
               />
+            <Text style={styles.subtitle}>Transaction Hash</Text>
+            <Text style={styles.location}>{this.state.hash ? this.state.hash : 'Hash Unavailable'}</Text>
+              </Card>
+                <Button 
+                  icon={
+                    <Icon
+                      name='link'
+                      size={25}
+                      color='white'
+                    />
+                  }
+                    containerStyle={styles.buttonSignup}
+                    onPress={() => { this.props.navigation.navigate('ContractList') } }
+                    title='RETURN TO PRODUCT LIST'
+                />
+  
               </View>
-            }
-
-            {/* { this.state.hasBalance &&
-              <View style={styles.view}>
-                  <Text style={styles.welcome}> Welcome to STRATO Mobile {this.state.username}!</Text>
-                  <Text style={styles.subWelcome}> Balance {this.state.accountInfo.balance} </Text>
-                  <Text style={styles.subWelcome}> Code Hash {this.state.accountInfo.codeHash} </Text>
-                  <Text style={styles.subWelcome}> Latest Block Number {this.state.accountInfo.latestBlockNum} </Text>
-                  <Button
-                  onPress={this.faucet}
-                  title='Create a Contract'
-                  />
-              </View>
-            } */}
-
-          </View>
-          )
+           
+              )
         }
-      };
+  };
 
 
  // @ts-ignore
@@ -137,88 +179,7 @@ export class Confirmation extends Component<IProps, IState> {
     return {
     };
   }
-  
-  export default connect(mapStateToProps, mapDispatchToProps)(Confirmation);
 
-
-  // const styles = StyleSheet.create({
-  //   mainView: {
-  //     flex: 1
-  //   },
-  //   headerView: {
-  //     flex:1,
-  //     position: 'relative',
-  //     zIndex: 2
-  //   },
-  //   walletView: {
-  //     backgroundColor: '#ffffff',
-  //     padding: 0,
-  //     flexDirection: 'column',
-  //     borderBottomColor: 'rgba(44,55,71,0.3)',
-  //     borderBottomWidth: 1,
-  //     marginTop:0,
-  //     position:'absolute',
-  //     top: 0,
-  //     left: 0,
-  //     height: '35%',
-  //     width: '100%',
-  //     zIndex: 1
-  //   },
-  //   view: {
-  //     padding: 30,
-  //     flex: 1,
-  //     alignItems: 'center',
-  //     backgroundColor: '#ffffff'
-  //   },
-  //   button: {
-  //     backgroundColor: "rgba(92, 99,216, 1)",
-  //     width: 300,
-  //     height: 45,
-  //     borderColor: "transparent",
-  //     borderWidth: 0,
-  //     borderRadius: 5
-  //   },
-  //   containerPadding: {
-  //     borderColor:'#333333',
-  //     borderTopWidth: 1,
-  //     borderLeftWidth: 1,
-  //     borderRightWidth: 1,
-  //     borderBottomWidth: 1,
-  //     borderRadius: 5,
-  //     padding: 5,
-  
-  //   },
-  //   welcome: {
-  //     alignItems: 'center',
-  //     padding: 20,
-  //     fontSize: 18,
-  //   },
-  //   subWelcome: {
-  //     padding: 20,
-  //     alignItems: 'center',
-  //     fontSize: 18,
-  //   },
-  //   loadingContainer: {
-  //     flex: 1,
-  //     justifyContent: 'center',
-  //     height: '100%',
-  //     zIndex: 1
-  //   },
-  //   walletContainer: {
-  //     flex: 1,
-  //     justifyContent: 'center',
-  //     height: '100%',
-  //     zIndex: 1
-  //   },
-  //   horizontal: {
-  //     flexDirection: 'row',
-  //     justifyContent: 'space-around',
-  //     padding: 0
-  //   },
-  //   loaderWheel: {
-  //     alignSelf: 'center',
-  //   },
-  // });
 
   const styles = StyleSheet.create({
     view: {
@@ -227,10 +188,53 @@ export class Confirmation extends Component<IProps, IState> {
       alignItems: 'center',
       backgroundColor: '#ffffff'
     },
+    icon: {
+      padding: 15,
+      alignSelf: 'center',
+    },
+    card: {
+      flexDirection: 'column',
+      height: '80%',
+      width: '90%',
+      borderRadius: 1,
+      marginBottom: 30,
+      borderColor: 'rgba(53,53,53,0.1)',
+    },
+    title: {
+      alignSelf: 'center',
+      fontSize: 36,
+      padding: 15,
+    },
+    subtitle: {
+      alignSelf: 'center',
+      paddingTop: 20,
+      fontSize: 14,
+    },
+    location: {
+      alignSelf: 'center',
+      fontWeight: 'normal',
+      paddingTop: 20,
+      padding: 5,
+      fontSize: 22,
+    },
+    currentLocation: {
+      alignSelf: 'center',
+      padding: 5,
+      fontSize: 22,
+      color: 'blue',
+
+    },
+    hash: {
+      alignSelf: 'center',
+      padding: 5,
+      fontSize: 22,
+    },
     loginCard: {
       flex: 6,
       alignSelf: 'stretch',
-  
+    },
+    success: {
+      alignSelf: 'center',
     },
     signupCard: {
       flex: 1,
@@ -241,36 +245,13 @@ export class Confirmation extends Component<IProps, IState> {
       alignSelf: 'center'
     },
     buttonSignup: {
-      backgroundColor: "rgba(92, 99,216, 1)",
       width: 300,
       height: 45,
-      borderColor: "transparent",
-      borderWidth: 0,
-      borderRadius: 3,
     },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      height: '100%',
-      zIndex: 1
-    },
-    buttonLogin: {
-      backgroundColor: "rgba(92, 99,216, 1)",
-      width: 100,
-      height: 45,
-      borderColor: "transparent",
-      borderWidth: 0,
-      borderRadius: 3,
-      alignSelf: 'center',
-      marginTop: 20
-    },
-  
-  
     inputPadding:{
       marginTop: 20,
       marginLeft: 15
     },
-  
     containerPadding: {
       borderColor:'#333333',
       borderTopWidth: 1,

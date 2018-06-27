@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import React, { Component } from 'react';
-import { View, AsyncStorage, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, AsyncStorage } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Toast from 'react-native-easy-toast'; // import * as HttpStatus from 'http-status-codes';
@@ -16,14 +16,14 @@ export class Confirmation extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: true,
+            isLoading: false,
             address: '',
             contractAddress: '',
-            contractName: '',
+            location: '',
             contractSource: '',
             contractEscrow: '',
             contractMultiSig: '',
-            codeHash: '',
+            hash: '',
             status: '',
             username: this.props.navigation.getParam('username'),
             password: this.props.navigation.getParam('password'),
@@ -34,8 +34,8 @@ export class Confirmation extends Component {
         //this.createMultiSigContract = this.createMultiSigContract.bind(this);
     }
     componentDidMount() {
-        let address = AsyncStorage.getItem('address');
-        console.log('got address from storage', address);
+        //let address = AsyncStorage.getItem('address');
+        //console.log('got address from storage', address)
     }
     createMultiSigContract() {
         this.setState({ contractSource: 'contract source for multisig' });
@@ -46,46 +46,48 @@ export class Confirmation extends Component {
     }
     compileContract() {
         return __awaiter(this, void 0, void 0, function* () {
+            this.setState({ isLoading: true });
+            let address = yield AsyncStorage.getItem(`${this.state.username}`);
+            let response = address.replace(/^"(.*)"$/, '$1');
+            yield this.setState({ address: response });
+            console.log('address from async storage', this.state.address);
+            console.log('compiling contract...');
             const src = `pragma solidity ^0.4.8;
 
 
       contract SupplyChain {
+          uint m_uuid;
+          string m_location;
+          uint m_timestamp;
       
       
-          struct Item {
-              uint uuid;
-              string location;
-              uint timestamp; 
-          }
-          
-          Item[] public itemIndex;
-      
-          mapping(uint => Item) public items;
-      
-          function addItem(uint uuid, string location, uint timestamp) public returns (uint) {
-              timestamp = now;
-              items[uuid] = Item(uuid, location, timestamp);
-              itemIndex.push(Item(uuid, location, timestamp));
+          function SupplyChain(uint uuid, string location) public {
+              m_timestamp = now;
+              m_uuid = uuid;
+              m_location = location;
           }
       
-          function scanItem(uint uuid, string location, uint timestamp) public returns (bool success) {
-              timestamp = now;
-              items[uuid].location = location;
-              items[uuid].timestamp = timestamp;
+          function addItem(uint uuid, string location) public returns (uint) {
+              m_timestamp = now;
+              m_uuid = uuid;
+              m_location = location;
+          }
+      
+          function scanItem(uint uuid, string location) public returns (bool success) {
+              m_timestamp = now;
+              m_uuid = uuid;
+              m_location = location;
               return true;
           }
       
           function getLocation(uint uuid) public returns (string) {
-              return items[uuid].location;
+              return m_location;
           }
           
-          function getItemInfo(uint uuid) public returns (uint, string, uint) {
-              return (items[uuid].uuid, items[uuid].location, items[uuid].timestamp);
+          function getItemInfo(uint uuid) public returns (string) {
+              return m_location;
           } 
       
-          function getItemCount() public constant returns(uint count) {
-              return itemIndex.length;
-          }
       }`;
             // const src = 
             // `contract ${this.state.contractName} {
@@ -103,10 +105,14 @@ export class Confirmation extends Component {
             const blocURL = 'http://localhost/bloc/v2.2/users/';
             const username = this.state.username;
             const password = this.state.password;
-            const contractName = this.state.contractName;
-            const RequestBody = { password, contractName, src };
-            const address = yield AsyncStorage.getItem('address');
-            yield fetch(blocURL + username + '/' + address + '/contract?resolve', {
+            //const location = this.state.location;
+            const args = {
+                uuid: '12345',
+                location: this.state.location
+            };
+            const RequestBody = { password, src, args };
+            console.log('got address from storage for user:', this.state.username, '--->', this.state.address);
+            yield fetch(blocURL + username + '/' + this.state.address + '/contract?resolve', {
                 method: 'POST',
                 body: JSON.stringify(RequestBody),
                 headers: {
@@ -118,11 +124,11 @@ export class Confirmation extends Component {
                 .then(json => {
                 console.log(json);
                 this.setState({
-                    contractName: json.contractName,
-                    address: json.address,
-                    codeHash: json.codeHash,
+                    isLoading: false,
+                    status: json.status,
+                    hash: json.hash,
                 });
-                this.props.navigation.navigate('ContractDetail', { address: this.state.address });
+                this.props.navigation.navigate('Confirmation', { status: this.state.status, hash: this.state.hash });
             })
                 .catch(function (error) {
                 console.log('unable to create contract', error);
@@ -135,12 +141,12 @@ export class Confirmation extends Component {
     render() {
         return (React.createElement(View, { style: styles.view },
             React.createElement(View, { style: styles.loginCard },
-                React.createElement(Text, { style: styles.header }, " Contract Builder "),
+                React.createElement(Text, { style: styles.header }, " Add Product "),
                 React.createElement(Input, { placeholder: 'Username', leftIcon: React.createElement(Icon, { name: 'user', size: 20, color: '#333333' }), containerStyle: styles.inputPadding, onChangeText: (username) => this.setState({ username }), value: this.state.username }),
-                React.createElement(Input, { placeholder: 'Contract Name', leftIcon: React.createElement(Icon, { name: 'info', size: 20, color: '#333333' }), containerStyle: styles.inputPadding, onChangeText: (contractName) => this.setState({ contractName }), value: this.state.contractName }),
+                React.createElement(Input, { placeholder: 'Origin Location', leftIcon: React.createElement(Icon, { name: 'info', size: 20, color: '#333333' }), containerStyle: styles.inputPadding, onChangeText: (location) => this.setState({ location }), value: this.state.location }),
                 React.createElement(Input, { placeholder: 'Password', leftIcon: React.createElement(Icon, { name: 'lock', size: 20, color: '#333333' }), secureTextEntry: true, containerStyle: styles.inputPadding, onChangeText: (password) => this.setState({ password }), value: this.state.password })),
             React.createElement(View, null,
-                React.createElement(Button, { containerStyle: styles.buttonSignup, icon: React.createElement(Icon, { name: 'lock', size: 20, color: 'white' }), onPress: this.createEscrowContract, title: 'DEPLOY CONTRACT' }),
+                React.createElement(Button, { containerStyle: styles.buttonSignup, icon: React.createElement(Icon, { name: 'lock', size: 20, color: 'white' }), onPress: this.createEscrowContract, title: 'DEPLOY CONTRACT', loading: this.state.isLoading, disabled: this.state.isLoading, loadingStyle: styles.loading }),
                 React.createElement(Toast, { ref: "toast", style: { backgroundColor: '#333333' }, position: 'top', positionValue: 300, fadeInDuration: 750, fadeOutDuration: 1000, opacity: 0.8, textStyle: { color: 'white' } }))));
     }
 }
@@ -156,6 +162,20 @@ function mapDispatchToProps(dispatch) {
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Confirmation);
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center'
+    },
+    horizontal: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10
+    },
+    loading: {
+        alignSelf: 'center',
+        width: 300,
+        height: 50,
+    },
     view: {
         padding: 10,
         height: '100%',
@@ -171,6 +191,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
+        padding: 15,
         marginTop: 12,
         fontSize: 22,
         alignSelf: 'center'

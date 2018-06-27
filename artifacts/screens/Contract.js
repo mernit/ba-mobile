@@ -7,8 +7,10 @@ export default class Contract extends Component {
         this.state = {
             stateResponse: [],
             loading: true,
+            uuid: '',
             storedData: '',
             address: this.props.navigation.getParam('address'),
+            userAddress: this.props.navigation.getParam('userAddress'),
             contractAddress: '',
             contractName: '',
             status: '',
@@ -22,16 +24,18 @@ export default class Contract extends Component {
             username: this.props.navigation.getParam('username'),
             password: this.props.navigation.getParam('password'),
         };
-        this.componentDidMount = this.componentDidMount.bind(this);
+        this.componentWillMount = this.componentWillMount.bind(this);
         this.callContract = this.callContract.bind(this);
         this.getState = this.getState.bind(this);
     }
     componentWillMount() {
         this.getState();
-        // this.callContract();
-        // GET CONTRACT STATE VARIABLES 
-        // USER CAN MODIFY STATE VARIABLES IN INPUT FIELDS
-        // CALL CONTRACT AND PUSH UPDATED STATE VARIABLES
+        // if(this.props.navigation.getParam('uuid')) {
+        //   this.callContract();
+        // }
+        // else if(this.props.navigation.getParam('address') && this.props.navigation.getParam('uuid')) {
+        //   this.getState();
+        // }
     }
     // CALL CONTRACT 
     callContract() {
@@ -42,7 +46,7 @@ export default class Contract extends Component {
         const address = '87168271eb89f6d0282725681f7b724bde31c4f0';
         const contractAddress = 'b823216ffb44fcea8eb4e2a53d7275eee8435aef';
         const callArgs = {
-            location: 'riverdale',
+            location: 'riverdale, ny 10463',
             uuid: '123456789',
             timestamp: '1142',
         };
@@ -71,17 +75,19 @@ export default class Contract extends Component {
         });
     }
     getState() {
-        const blocURL = `http://localhost/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
+        const blocURL = `http://localhost/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
         fetch(blocURL, {
             method: 'GET',
         })
             .then(response => response.json())
             .then(json => {
-            console.log(json);
+            console.log(json.m_timestamp);
             this.setState({
-                location: json.itemIndex[0].location,
-                currentLocation: json.itemIndex.slice(-1)[0].location,
-                timestamp: json.itemIndex[0].timestamp,
+                //location: json.itemIndex[0].location,
+                //currentLocation: json.itemIndex.slice(-1)[0].location,
+                timestamp: json.m_timestamp,
+                location: json.m_location,
+                uuid: json.m_uuid,
             });
         })
             .catch(function (error) {
@@ -92,15 +98,15 @@ export default class Contract extends Component {
     render() {
         return (React.createElement(View, { style: styles.view },
             React.createElement(Card, { containerStyle: styles.card },
-                React.createElement(Text, { style: styles.title }, "VERIFIED"),
-                React.createElement(Icon, { iconStyle: styles.icon, name: 'check-circle', size: 72, color: '#00aced' }),
-                React.createElement(Text, { style: styles.subtitle }, "Origin Location"),
-                React.createElement(Text, { style: styles.location }, this.state.location),
+                React.createElement(Text, { style: styles.title }, this.state.timestamp ? 'VERIFIED' : 'UNVERIFIED'),
+                React.createElement(Icon, { iconStyle: styles.icon, name: this.state.timestamp ? 'check-circle' : 'info', size: 72, color: this.state.timestamp ? 'green' : 'orange' }),
+                React.createElement(Text, { style: styles.subtitle }, "UUID"),
+                React.createElement(Text, { style: styles.location }, this.state.uuid ? this.state.uuid : 'UUID Unavailable'),
                 React.createElement(Text, { style: styles.subtitle }, "Current Location"),
-                React.createElement(Text, { style: styles.currentLocation }, this.state.currentLocation),
+                React.createElement(Text, { style: this.state.location ? styles.currentLocation : styles.location }, this.state.location ? this.state.location : 'Location Unavailable'),
                 React.createElement(Text, { style: styles.subtitle }, "Timestamp"),
-                React.createElement(Text, { style: styles.hash }, this.state.timestamp)),
-            React.createElement(Button, { icon: React.createElement(Icon, { name: 'link', size: 25, color: 'white' }), containerStyle: styles.buttonSignup, onPress: () => { this.props.navigation.navigate('Camera'); }, title: 'CHECK-IN' })));
+                React.createElement(Text, { style: styles.hash }, this.state.timestamp ? this.state.timestamp : 'Timestamp Unavailable')),
+            React.createElement(Button, { icon: React.createElement(Icon, { name: 'link', size: 25, color: 'white' }), containerStyle: styles.buttonSignup, onPress: () => { this.props.navigation.navigate('Camera', { address: this.state.address, userAddress: this.state.userAddress }); }, title: 'CHECK-IN' })));
     }
 }
 ;
@@ -121,6 +127,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff'
     },
     icon: {
+        padding: 15,
         alignSelf: 'center',
     },
     card: {
@@ -134,28 +141,27 @@ const styles = StyleSheet.create({
     title: {
         alignSelf: 'center',
         fontSize: 36,
-        paddingTop: 20,
-        paddingBottom: 20,
+        padding: 15,
     },
     subtitle: {
         alignSelf: 'center',
-        paddingTop: 30,
+        paddingTop: 20,
         fontSize: 14,
     },
     location: {
         alignSelf: 'center',
-        padding: 10,
+        padding: 5,
         fontSize: 22,
     },
     currentLocation: {
         alignSelf: 'center',
-        padding: 10,
+        padding: 5,
         fontSize: 22,
-        color: 'blue',
+        color: 'black',
     },
     hash: {
         alignSelf: 'center',
-        padding: 10,
+        padding: 5,
         fontSize: 22,
     },
     loginCard: {

@@ -21,13 +21,23 @@ import { connect, Dispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ContractListUpdatedActionCreator } from '../actions/ContractActions';
 
-import ContractService, { IContractListUpdated } from '../services/ContractService';
-
 //import { AccountFaucetedActionCreator, IAccountFauceted } from '../actions/UserActions';
 
 //import UserService, { IAccountFauceted } from '../services/UserService';
 
 // @ts-ignore
+
+// SET GLOBAL PROPS //
+import { setCustomText} from 'react-native-global-props';
+
+const customTextProps = {
+  style: {
+    fontFamily: 'Avenir-Heavy'
+  }
+}
+
+setCustomText(customTextProps);
+// END SET GLOBAL PROPS //
 
 const InternalStack = StackNavigator({
   Confirmation: { screen: Confirmation,
@@ -97,22 +107,12 @@ export class App extends Component<IProps> {
     // private contractService: UserService;
     // private locationService: LocationService;
 
-    private contractService: ContractService;
 
     constructor(props: IProps){
       super(props);
 
-      this.gotNewContractList = this.gotNewContractList.bind(this);
-
-      this.contractService = new ContractService({contractListUpdated: this.gotNewContractList});
-      this.contractService.StartMonitoring();
-
       
     }
-    
-    private async gotNewContractList(props: IContractListUpdated) {
-      await this.props.ContractListUpdated(props.contractList);
-   }
 
     
     render() {

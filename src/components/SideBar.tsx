@@ -1,19 +1,9 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-
 import IStoreState from '../store/IStoreState';
 import { connect, Dispatch } from 'react-redux';
-
 import {ListItem} from 'react-native-elements';
-
 import {NavigationActions} from 'react-navigation';
-
-// import Icon from 'react-native-vector-icons/FontAwesome';
-
-/*
-import { bindActionCreators } from 'redux';
-import { UserLoggedInActionCreator } from '../actions/AuthActions';
-*/
 
 interface IProps {
     navigation?: any,
@@ -21,7 +11,11 @@ interface IProps {
 }
 
 interface IState {
-  apexHash: Array<any>,
+  apexHash: string,
+  blockNumber: string,
+  difficulty: string,
+  nonce: string,
+  isVisible: boolean
 }
 
 export class SideBar extends Component<IProps, IState> {
@@ -30,7 +24,11 @@ export class SideBar extends Component<IProps, IState> {
         super(props);
 
         this.state = {
-          apexHash: [],
+          apexHash: '',
+          blockNumber: '',
+          difficulty: '',
+          nonce: '',
+          isVisible: false,
         }
 
         this.resetAction = NavigationActions.replace({ routeName: 'Map' });
@@ -51,9 +49,12 @@ export class SideBar extends Component<IProps, IState> {
         })
         .then(response => response.json())
         .then(json => {
-          console.log('got apex status', json.lastBlock.hash);
+          console.log('got apex status', json.lastBlock.hash, json.lastBlock.number);
           this.setState({
             apexHash: json.lastBlock.hash,
+            blockNumber: json.lastBlock.number,
+            difficulty: json.lastBlock.totalDifficulty,
+            nonce: json.lastBlock.nonce,
           });
         })
         .catch(function (error) {
@@ -72,7 +73,6 @@ export class SideBar extends Component<IProps, IState> {
       this.props.navigation.dispatch(resetAction);
     }
 
-
     navigateToScreen = (route) => () => {
       const navigateAction = NavigationActions.navigate({
         routeName: route
@@ -81,23 +81,36 @@ export class SideBar extends Component<IProps, IState> {
     }
 
     render() {
-      let apexHash = JSON.stringify(this.state.apexHash);
          return (
         <View style={styles.view}>
+
+                {/* <ListItem
+                  // roundAvatar
+                  // avatar={{uri:l.avatar_url}}
+                  containerStyle={styles.navItem}
+                  key='Login'
+                  title='Products'
+                  leftIcon={{name: 'flight-takeoff', color: "rgba(51, 51, 51, 0.8)"}}
+
+                  onPress={ () => {
+                    this.resetNavigation('ContractList');
+                  }} 
+                /> */}
+
                 <ListItem
                   // roundAvatar
                   // avatar={{uri:l.avatar_url}}
                   containerStyle={styles.navItem}
                   key='Contracts'
-                  title='Contracts'
-                  leftIcon={{name: 'lock', color: "rgba(51, 51, 51, 0.8)"}}
+                  title='Products'
+                  leftIcon={{name: 'reorder', color: "rgba(51, 51, 51, 0.8)"}}
 
                   onPress={ () => {
                     this.resetNavigation('ContractList');
                   }} 
                 />
 
-                <ListItem
+                {/* <ListItem
                   containerStyle={styles.navItem}
                   key='LifeCycle'
                   title='LifeCycle'
@@ -106,13 +119,13 @@ export class SideBar extends Component<IProps, IState> {
                   onPress={ () => {
                     this.resetNavigation('LifeCycle');
                   }} 
-                />
+                /> */}
 
                  <ListItem
                   containerStyle={styles.navItem}
                   key='ContractBuilder'
-                  title='ContractBuilder'
-                  leftIcon={{name: 'description', color: "rgba(51, 51, 51, 0.8)"}}
+                  title='Add Product'
+                  leftIcon={{name: 'open-in-new', color: "rgba(51, 51, 51, 0.8)"}}
 
                   onPress={ () => {
                     this.resetNavigation('ContractBuilder');
@@ -122,26 +135,43 @@ export class SideBar extends Component<IProps, IState> {
                 <ListItem
                   containerStyle={styles.navItem}
                   key='ContractDetail'
-                  title='ContractDetail'
-                  leftIcon={{name: 'camera', color: "rgba(51, 51, 51, 0.8)"}}
+                  title='Check-In'
+                  leftIcon={{name: 'cached', color: "rgba(51, 51, 51, 0.8)"}}
 
                   onPress={ () => {
-                    this.resetNavigation('ContractDetail');
+                    this.resetNavigation('Camera');
                   }} 
                 />
 
-              {/* START APEX STATUS */}
-              
-              <Text style={styles.apexHeader}>Node Stats</Text>
-              <Text style={styles.apex}>Hash: {apexHash}</Text>
-
-              {/* END APEX STATUS */}
-
+                <ListItem
+                  title='Node Status'
+                  titleStyle={styles.title}
+                  containerStyle={styles.navStatusItem}
+                  onPress={()=>{
+                    this.state.isVisible ?
+                    this.setState({isVisible: false}) :
+                    this.setState({isVisible: true});
+                  }} 
+                  leftIcon={{name: 'wifi', color: "rgba(50,205,50)"}}
+                  // title={
+                  //   <Text style={styles.apexHeader}>Node {this.state.apexHash ? 'Online' : 'Offline'}
+                  //   </Text> 
+                  // }
+                  subtitle={
+                    this.state.isVisible &&
+                    <View>
+                    <Text style={styles.blockNumber}>{this.state.blockNumber}</Text>
+                    <Text style={styles.subStatus}>Block Number</Text>
+                    <Text style={styles.blockNumber}>{this.state.difficulty}</Text>
+                    <Text style={styles.subStatus}>Total Difficulty</Text>
+                    <Text style={styles.blockNumber}>{this.state.nonce}</Text>
+                    <Text style={styles.subStatus}>Nonce</Text>
+                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.blockNumber}>{this.state.apexHash}</Text>
+                    <Text style={styles.subStatus}>Hash</Text>
+                    </View>
+                  }
+                />
              <Text style={styles.poweredBy}>Powered by BlockApps STRATO</Text>
-
-
-
-            }
         </View>
       )
     }
@@ -167,29 +197,43 @@ const styles = StyleSheet.create({
   view: {
     marginTop:20,
     flex: 1,
-    // backgroundColor: '#2f424d'
+    //backgroundColor: '#394b59'
   },
   apexHeader: {
-    left: 20,
-    paddingTop: 50,
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  apex: {
-    borderColor: 'black',
-    fontSize: 10,
-    color: 'green',
-    padding: 20,
+    padding: 5,
   },
   navItem: {
+    //backgroundColor: '#394b59',
     borderBottomWidth: 1,
     paddingTop: 30,
     paddingBottom: 30,
     borderBottomColor:"rgba(51, 51, 51, 0.2)",
   },
+  navStatusItem: {
+    //backgroundColor: '#394b59',
+    borderBottomWidth: 1,
+    paddingTop: 30,
+    paddingBottom: 30,
+    borderBottomColor:"rgba(51, 51, 51, 0.2)",
+  },
+  status: {
+    paddingTop: 5,
+  },
+  subStatus: {
+    paddingTop: 5,
+    color: 'gray',
+    fontSize: 10,
+  },
+  blockNumber: {
+    width: '75%',
+    fontWeight: 'normal',
+    paddingTop: 20,
+  },
   poweredBy: {
-
-    marginTop: 120,
     alignSelf: 'center',
+    bottom: 5,
+    position: 'absolute',
+    padding: 20,
   }
 });

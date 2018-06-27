@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import SleepUtil from '../services/SleepUtil';
+import { View, StyleSheet, Text, AsyncStorage } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button, Card } from 'react-native-elements';
@@ -18,16 +17,16 @@ import Toast from 'react-native-easy-toast';
 
 interface IProps {
   navigation: any;
-  // Actions
-  //  UsernameChanged?: (username: string) => (dispatch: Dispatch<IStoreState>) => Promise<void>;
 }
 
 interface IState {
+  isLoading: boolean,
   username: string,
-  userAddress: string,
   password: string,
   confirmPassword: string,
-  createButtonDisabled: boolean
+  createButtonDisabled: boolean,
+  address: string,
+  faucetSuccess: boolean
 }
 
 export class Signup extends Component<IProps, IState> {
@@ -36,38 +35,67 @@ export class Signup extends Component<IProps, IState> {
     super(props);
 
     this.state = {
+      isLoading: false,
       username: '',
-      userAddress: '',
+      address: '',
       password: '',
       confirmPassword: '',
+      faucetSuccess: false,
       createButtonDisabled: false
     };
 
     this.createUser = this.createUser.bind(this);
     this.validateSignup = this.validateSignup.bind(this);
-    this.componentDidMount = this.componentDidMount.bind(this);
-    this.updateUsername = this.updateUsername.bind(this);
+    // this.faucet = this.faucet.bind(this);
   }
 
-  componentWillMount(){
+    createUser(){
+      this.setState({createButtonDisabled: true, isLoading: true});
+      let password = this.state.password;
+      fetch('http://localhost/bloc/v2.2/users/' + this.state.username, {
+        method: 'POST',
+        body: JSON.stringify(password),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json);
+        this.setState({
+          address: json,
+          isLoading: false,
+        });
+        AsyncStorage.setItem(`${this.state.username}`, JSON.stringify(this.state.address));
+        console.log('stored username', AsyncStorage.getItem(`${this.state.username}`));
+        console.log('stored address', AsyncStorage.getItem(`${this.state.address}`));
+        this.props.navigation.navigate('ContractList', {address: this.state.address, faucetAccount: true})
+        //this.faucet()
+      })
+      .catch(function (error) {
+        console.log('unable to create user', error);
+        throw error;
+      });
   }
 
-  componentDidMount(){
-
-  }
-
-  async updateUsername(username: string){
-      await this.setState({username: username});
-  }
-
-  async createUser() {
-    console.log('got user info')
-    this.setState({createButtonDisabled: true});
-    this.props.navigation.navigate('Confirmation', {username: this.state.username, password: this.state.password});
-    };
+  //   faucet() {
+  //     fetch('http://tdlwv3y2cp.eastus2.cloudapp.azure.com/strato-api/eth/v1.2/faucet', {
+  //       method: 'POST',
+  //       body: `address=${this.state.address}`,
+  //       headers: {
+  //         'Content-Type': 'application/x-www-form-urlencoded'
+  //       },
+  //     })
+  //     .then(function (response) {
+  //       console.log('fauceted account', response);
+  //       return response;
+  //     })
+  //     .catch(function (error) {
+  //       console.log('unable to faucet account', error);
+  //       throw error;
+  //     })
+  // }
   
-        
-
   //   if(this.state.password != this.state.confirmPassword){
   //     this.validateSignup({code:'PasswordsDoNotMatch'}, null);
   //     return;
@@ -105,7 +133,6 @@ export class Signup extends Component<IProps, IState> {
     if(err_msg != ''){
       // @ts-ignore
       this.refs.toast.show(err_msg);
-      await SleepUtil.SleepAsync(2000);
       this.setState({createButtonDisabled: false});
       return;
     }
@@ -114,7 +141,7 @@ export class Signup extends Component<IProps, IState> {
   render() {
     return (
       <View style={styles.view}>
-       <Text style={styles.header}> Signup Below </Text>
+       <Text style={styles.header}>Create Account </Text>
         <Card containerStyle={styles.loginCard}>
           <Input
             placeholder='Username'
@@ -126,7 +153,7 @@ export class Signup extends Component<IProps, IState> {
               />
             }
             containerStyle={styles.inputPadding}
-            onChangeText={this.updateUsername}
+            onChangeText={(username) => this.setState({username})}
             value={this.state.username}
             />
           
@@ -166,6 +193,8 @@ export class Signup extends Component<IProps, IState> {
           <Button 
                   onPress={this.createUser}
                   title='Create Account'
+                  loading={this.state.isLoading}
+                  loadingStyle={styles.loading}
                   disabled={this.state.createButtonDisabled}
                   buttonStyle={styles.button}
                   containerStyle={
@@ -210,7 +239,11 @@ export default connect(mapStateToProps, mapDispatchToProps)(Signup);
 const styles = StyleSheet.create({
   loginCard: {
   },
-
+  loading: {
+    alignSelf: 'center',
+    width: 300,
+    height: 50,
+  },
   header:{
     fontSize: 22
   },

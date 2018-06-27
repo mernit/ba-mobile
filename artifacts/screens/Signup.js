@@ -7,8 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import SleepUtil from '../services/SleepUtil';
+import { View, StyleSheet, Text, AsyncStorage } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button, Card } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -18,34 +17,63 @@ export class Signup extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoading: false,
             username: '',
-            userAddress: '',
+            address: '',
             password: '',
             confirmPassword: '',
+            faucetSuccess: false,
             createButtonDisabled: false
         };
         this.createUser = this.createUser.bind(this);
         this.validateSignup = this.validateSignup.bind(this);
-        this.componentDidMount = this.componentDidMount.bind(this);
-        this.updateUsername = this.updateUsername.bind(this);
-    }
-    componentWillMount() {
-    }
-    componentDidMount() {
-    }
-    updateUsername(username) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.setState({ username: username });
-        });
+        // this.faucet = this.faucet.bind(this);
     }
     createUser() {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log('got user info');
-            this.setState({ createButtonDisabled: true });
-            this.props.navigation.navigate('Confirmation', { username: this.state.username, password: this.state.password });
+        this.setState({ createButtonDisabled: true, isLoading: true });
+        let password = this.state.password;
+        fetch('http://localhost/bloc/v2.2/users/' + this.state.username, {
+            method: 'POST',
+            body: JSON.stringify(password),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => response.json())
+            .then(json => {
+            console.log(json);
+            this.setState({
+                address: json,
+                isLoading: false,
+            });
+            AsyncStorage.setItem(`${this.state.username}`, JSON.stringify(this.state.address));
+            console.log('stored username', AsyncStorage.getItem(`${this.state.username}`));
+            console.log('stored address', AsyncStorage.getItem(`${this.state.address}`));
+            this.props.navigation.navigate('ContractList', { address: this.state.address, faucetAccount: true });
+            //this.faucet()
+        })
+            .catch(function (error) {
+            console.log('unable to create user', error);
+            throw error;
         });
     }
-    ;
+    //   faucet() {
+    //     fetch('http://tdlwv3y2cp.eastus2.cloudapp.azure.com/strato-api/eth/v1.2/faucet', {
+    //       method: 'POST',
+    //       body: `address=${this.state.address}`,
+    //       headers: {
+    //         'Content-Type': 'application/x-www-form-urlencoded'
+    //       },
+    //     })
+    //     .then(function (response) {
+    //       console.log('fauceted account', response);
+    //       return response;
+    //     })
+    //     .catch(function (error) {
+    //       console.log('unable to faucet account', error);
+    //       throw error;
+    //     })
+    // }
     //   if(this.state.password != this.state.confirmPassword){
     //     this.validateSignup({code:'PasswordsDoNotMatch'}, null);
     //     return;
@@ -81,7 +109,6 @@ export class Signup extends Component {
             if (err_msg != '') {
                 // @ts-ignore
                 this.refs.toast.show(err_msg);
-                yield SleepUtil.SleepAsync(2000);
                 this.setState({ createButtonDisabled: false });
                 return;
             }
@@ -89,15 +116,15 @@ export class Signup extends Component {
     }
     render() {
         return (React.createElement(View, { style: styles.view },
-            React.createElement(Text, { style: styles.header }, " Signup Below "),
+            React.createElement(Text, { style: styles.header }, "Create Account "),
             React.createElement(Card, { containerStyle: styles.loginCard },
-                React.createElement(Input, { placeholder: 'Username', leftIcon: React.createElement(Icon, { name: 'user', size: 20, color: '#333333' }), containerStyle: styles.inputPadding, onChangeText: this.updateUsername, value: this.state.username }),
+                React.createElement(Input, { placeholder: 'Username', leftIcon: React.createElement(Icon, { name: 'user', size: 20, color: '#333333' }), containerStyle: styles.inputPadding, onChangeText: (username) => this.setState({ username }), value: this.state.username }),
                 React.createElement(Input, { placeholder: 'Password', leftIcon: React.createElement(Icon, { name: 'lock', size: 20, color: '#333333' }), secureTextEntry: true, containerStyle: styles.inputPadding, 
                     //@ts-ignore
                     // inputContainerStyle={styles.containerPadding}
                     onChangeText: (password) => this.setState({ password }), value: this.state.password }),
                 React.createElement(Input, { placeholder: 'Confirm Password', leftIcon: React.createElement(Icon, { name: 'lock', size: 20, color: '#333333' }), secureTextEntry: true, containerStyle: styles.inputPadding, onChangeText: (confirmPassword) => this.setState({ confirmPassword }), value: this.state.confirmPassword }),
-                React.createElement(Button, { onPress: this.createUser, title: 'Create Account', disabled: this.state.createButtonDisabled, buttonStyle: styles.button, containerStyle: { marginTop: 20, marginBottom: 20 } })),
+                React.createElement(Button, { onPress: this.createUser, title: 'Create Account', loading: this.state.isLoading, loadingStyle: styles.loading, disabled: this.state.createButtonDisabled, buttonStyle: styles.button, containerStyle: { marginTop: 20, marginBottom: 20 } })),
             React.createElement(Toast, { ref: "toast", style: { backgroundColor: '#333333' }, position: 'bottom', positionValue: 225, fadeInDuration: 750, fadeOutDuration: 1000, opacity: 0.8, textStyle: { color: 'white' } })));
     }
 }
@@ -115,6 +142,11 @@ export default connect(mapStateToProps, mapDispatchToProps)(Signup);
 // define styles
 const styles = StyleSheet.create({
     loginCard: {},
+    loading: {
+        alignSelf: 'center',
+        width: 300,
+        height: 50,
+    },
     header: {
         fontSize: 22
     },

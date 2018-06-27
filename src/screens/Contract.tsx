@@ -18,11 +18,13 @@ interface IState {
     value: string,
     method: string,
     args: string,
+    uuid: string,
     location: string,
     timestamp: string,
     response: any,
     stateResponse: Array<any>,
     currentLocation: any,
+    userAddress: string,
 
 }
 
@@ -33,8 +35,10 @@ export default class Contract extends Component<IProps, IState> {
     this.state = {
         stateResponse: [],
         loading: true,
+        uuid: '',
         storedData: '',
         address: this.props.navigation.getParam('address'),
+        userAddress: this.props.navigation.getParam('userAddress'),
         contractAddress: '',
         contractName: '',
         status: '',
@@ -49,22 +53,20 @@ export default class Contract extends Component<IProps, IState> {
         password: this.props.navigation.getParam('password'),
     }
 
-    this.componentDidMount = this.componentDidMount.bind(this);
+    this.componentWillMount = this.componentWillMount.bind(this);
     this.callContract = this.callContract.bind(this);
     this.getState = this.getState.bind(this);
     }
 
     componentWillMount() {
       this.getState();
-      // this.callContract();
-
-      // GET CONTRACT STATE VARIABLES 
-
-      // USER CAN MODIFY STATE VARIABLES IN INPUT FIELDS
-
-      // CALL CONTRACT AND PUSH UPDATED STATE VARIABLES
-
-    }
+      // if(this.props.navigation.getParam('uuid')) {
+      //   this.callContract();
+      // }
+      // else if(this.props.navigation.getParam('address') && this.props.navigation.getParam('uuid')) {
+      //   this.getState();
+      // }
+  }
 
   // CALL CONTRACT 
 
@@ -76,7 +78,7 @@ export default class Contract extends Component<IProps, IState> {
     const address = '87168271eb89f6d0282725681f7b724bde31c4f0';
     const contractAddress = 'b823216ffb44fcea8eb4e2a53d7275eee8435aef';
     const callArgs = {
-      location: 'riverdale',
+      location: 'riverdale, ny 10463',
       uuid: '123456789',
       timestamp: '1142',
     };
@@ -107,17 +109,19 @@ export default class Contract extends Component<IProps, IState> {
 }
 
 getState() {
-  const blocURL = `http://localhost/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
+  const blocURL = `http://localhost/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
   fetch(blocURL, {
     method: 'GET',
   })
   .then(response => response.json())
   .then(json => {
-    console.log(json);
+    console.log(json.m_timestamp);
     this.setState({
-      location: json.itemIndex[0].location,
-      currentLocation: json.itemIndex.slice(-1)[0].location,
-      timestamp: json.itemIndex[0].timestamp,
+      //location: json.itemIndex[0].location,
+      //currentLocation: json.itemIndex.slice(-1)[0].location,
+      timestamp: json.m_timestamp,
+      location: json.m_location,
+      uuid: json.m_uuid,
     });
   })
   .catch(function (error) {
@@ -130,23 +134,22 @@ getState() {
     render() {
       return (
         <View style={styles.view}>
-          <Card containerStyle={styles.card}>
-          
-          
-            <Text style={styles.title}>VERIFIED</Text>
-              <Icon 
-                iconStyle={styles.icon}
-                name='check-circle'
-                size={72}
-                color='#00aced' 
-                />
-            <Text style={styles.subtitle}>Origin Location</Text>
-            <Text style={styles.location}>{this.state.location}</Text>
+          <Card containerStyle={styles.card}>       
+            <Text style={styles.title}>
+            {this.state.timestamp? 'VERIFIED' : 'UNVERIFIED'}
+            </Text>
+            <Icon 
+              iconStyle={styles.icon}
+              name={this.state.timestamp ? 'check-circle' : 'info'}
+              size={72}
+              color={this.state.timestamp ? 'green' : 'orange'}
+              />
+            <Text style={styles.subtitle}>UUID</Text>
+            <Text style={styles.location}>{this.state.uuid ? this.state.uuid : 'UUID Unavailable'}</Text>
             <Text style={styles.subtitle}>Current Location</Text>
-            <Text style={styles.currentLocation}>{this.state.currentLocation}</Text>
+            <Text style={this.state.location ? styles.currentLocation : styles.location}>{this.state.location ? this.state.location : 'Location Unavailable'}</Text>
             <Text style={styles.subtitle}>Timestamp</Text>
-            <Text style={styles.hash}>{this.state.timestamp}</Text>
-
+            <Text style={styles.hash}>{this.state.timestamp ? this.state.timestamp : 'Timestamp Unavailable'}</Text>
               </Card>
                 <Button 
                   icon={
@@ -157,7 +160,7 @@ getState() {
                     />
                   }
                     containerStyle={styles.buttonSignup}
-                    onPress={() => { this.props.navigation.navigate('Camera') } }
+                    onPress={() => { this.props.navigation.navigate('Camera', {address: this.state.address, userAddress: this.state.userAddress}) } }
                     title='CHECK-IN'
                 />
   
@@ -191,6 +194,7 @@ getState() {
       backgroundColor: '#ffffff'
     },
     icon: {
+      padding: 15,
       alignSelf: 'center',
     },
     card: {
@@ -204,29 +208,28 @@ getState() {
     title: {
       alignSelf: 'center',
       fontSize: 36,
-      paddingTop: 20,
-      paddingBottom: 20,
+      padding: 15,
     },
     subtitle: {
       alignSelf: 'center',
-      paddingTop: 30,
+      paddingTop: 20,
       fontSize: 14,
     },
     location: {
       alignSelf: 'center',
-      padding: 10,
+      padding: 5,
       fontSize: 22,
     },
     currentLocation: {
       alignSelf: 'center',
-      padding: 10,
+      padding: 5,
       fontSize: 22,
-      color: 'blue',
+      color: 'black',
 
     },
     hash: {
       alignSelf: 'center',
-      padding: 10,
+      padding: 5,
       fontSize: 22,
     },
     loginCard: {

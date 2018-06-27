@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList, StyleSheet, Text } from 'react-native';
+import { View, FlatList, StyleSheet, Text, ActivityIndicator, AsyncStorage } from 'react-native';
 import { ListItem, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -10,25 +10,61 @@ interface IProps {
 
 interface IState {
   data: Array<any>,
+  isLoading: boolean,
+  address: '',
+  faucetAccount: boolean,
+  username: '',
 }
 
 export default class ContractList extends Component<IProps, IState> {
   constructor(props: IProps){
     super(props);
     this.state = {
+      username: '',
+      isLoading: false,
+      address: this.props.navigation.getParam('address'),
       data: [],
+      faucetAccount: this.props.navigation.getParam('faucetAccount')
     }
   }
 
   componentDidMount() {
     this.getContracts();
+    // return AsyncStorage.getItem(`${this.state.username}`)
+    // .then(req => JSON.parse(req))
+    // .then(json => this.setState({username: json}))
+    // console.log('got json back from async storage', this.state.username);
+    //console.log('user saved in storage', AsyncStorage.getItem(`${this.state.username}`));
+    
   }
 
-  getContracts() {
-      console.log('getting contract list...');
-      const blocURL = 'http://localhost/bloc/v2.2/contracts/';
+  async faucet() {
+    await fetch('http://localhost/strato-api/eth/v1.2/faucet', {
+      method: 'POST',
+      body: `address=${this.state.address}`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+    })
+    .then(function (response) {
+      console.log('fauceted account', response);
+      return response;
+    })
+    .catch(function (error) {
+      console.log('unable to faucet account', error);
+      throw error;
+    })
+}
 
-      fetch(blocURL, {
+  async getContracts() {
+    if(this.state.faucetAccount) {
+      await this.faucet();
+      console.log('turning on the faucet for', this.state.address);
+    }
+      console.log('getting contract list...');
+
+      const blocURL = 'http://localhost/bloc/v2.2/contracts/';
+      await fetch(blocURL, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -52,7 +88,7 @@ export default class ContractList extends Component<IProps, IState> {
   onTouchContract(contract: any) {
     let address = contract.address;
     console.log('got address', address)
-    this.props.navigation.navigate('Contract', {address: address});
+    this.props.navigation.navigate('Contract', {address: address, userAddress: this.state.address});
   }
 
   renderItem = ({item}) => (
@@ -76,10 +112,23 @@ export default class ContractList extends Component<IProps, IState> {
     return (
       <View style={styles.view}>
         <Text style={styles.header}>My Packages</Text>
+
+        {
+          this.state.isLoading &&
+          <ActivityIndicator />
+        }
+
+        {
+          this.state.data.length == 0 &&
+          <Text style={styles.null}>No packages have been created yet</Text>
+        }
+
         <FlatList
          data={this.state.data}
          renderItem={this.renderItem}
          keyExtractor={item => item.id}
+         refreshing={this.state.isLoading}
+         onRefresh={() => this.getContracts()}
         />
 
           <Button containerStyle={styles.buttonSignup}
@@ -93,14 +142,6 @@ export default class ContractList extends Component<IProps, IState> {
             onPress={() => { this.props.navigation.navigate('ContractBuilder') } }
             title='ADD NEW PACKAGE'
         />
-
-        {
-          this.state.data.length == 0 &&
-          <Text style={styles.null}>No contracts have been created yet</Text>
-          
-        }
-
-
 
      </View>
     )

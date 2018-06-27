@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, AsyncStorage, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, AsyncStorage } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Toast from 'react-native-easy-toast';// import * as HttpStatus from 'http-status-codes';
@@ -16,14 +16,14 @@ interface IProps {
 }
 
 interface IState {
-    loading: boolean,
+    isLoading: boolean,
     username: string,
     address: string,
     password: string, 
     contractAddress: string,
-    contractName: string,
+    location: string,
     contractSource: string,
-    codeHash: string,
+    hash: string,
     status: string,
     contractEscrow: string,
     contractMultiSig: string,
@@ -34,14 +34,14 @@ export class Confirmation extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-        loading: true,
+        isLoading: false,
         address: '',
         contractAddress: '',
-        contractName: '',
+        location: '',
         contractSource: '',
         contractEscrow: '',
         contractMultiSig: '',
-        codeHash: '',
+        hash: '',
         status: '',
         username: this.props.navigation.getParam('username'),
         password: this.props.navigation.getParam('password'),
@@ -54,8 +54,8 @@ export class Confirmation extends Component<IProps, IState> {
     }
 
     componentDidMount() {
-      let address = AsyncStorage.getItem('address');
-      console.log('got address from storage', address)
+      //let address = AsyncStorage.getItem('address');
+      //console.log('got address from storage', address)
     }
 
     createMultiSigContract() {
@@ -68,47 +68,49 @@ export class Confirmation extends Component<IProps, IState> {
     }
 
     async compileContract(){
+      this.setState({isLoading: true});
+      let address = await AsyncStorage.getItem(`${this.state.username}`) 
+      let response = address.replace(/^"(.*)"$/, '$1');
+      await this.setState({address: response});
+      console.log('address from async storage', this.state.address);
+      console.log('compiling contract...')
       const src = 
       `pragma solidity ^0.4.8;
 
 
       contract SupplyChain {
+          uint m_uuid;
+          string m_location;
+          uint m_timestamp;
       
       
-          struct Item {
-              uint uuid;
-              string location;
-              uint timestamp; 
-          }
-          
-          Item[] public itemIndex;
-      
-          mapping(uint => Item) public items;
-      
-          function addItem(uint uuid, string location, uint timestamp) public returns (uint) {
-              timestamp = now;
-              items[uuid] = Item(uuid, location, timestamp);
-              itemIndex.push(Item(uuid, location, timestamp));
+          function SupplyChain(uint uuid, string location) public {
+              m_timestamp = now;
+              m_uuid = uuid;
+              m_location = location;
           }
       
-          function scanItem(uint uuid, string location, uint timestamp) public returns (bool success) {
-              timestamp = now;
-              items[uuid].location = location;
-              items[uuid].timestamp = timestamp;
+          function addItem(uint uuid, string location) public returns (uint) {
+              m_timestamp = now;
+              m_uuid = uuid;
+              m_location = location;
+          }
+      
+          function scanItem(uint uuid, string location) public returns (bool success) {
+              m_timestamp = now;
+              m_uuid = uuid;
+              m_location = location;
               return true;
           }
       
           function getLocation(uint uuid) public returns (string) {
-              return items[uuid].location;
+              return m_location;
           }
           
-          function getItemInfo(uint uuid) public returns (uint, string, uint) {
-              return (items[uuid].uuid, items[uuid].location, items[uuid].timestamp);
+          function getItemInfo(uint uuid) public returns (string) {
+              return m_location;
           } 
       
-          function getItemCount() public constant returns(uint count) {
-              return itemIndex.length;
-          }
       }`;
       // const src = 
       // `contract ${this.state.contractName} {
@@ -129,12 +131,15 @@ export class Confirmation extends Component<IProps, IState> {
       const blocURL = 'http://localhost/bloc/v2.2/users/';
       const username = this.state.username;
       const password = this.state.password;
-      const contractName = this.state.contractName;
-      const RequestBody = { password, contractName, src }
+      //const location = this.state.location;
+      const args = {
+        uuid: '12345',
+        location: this.state.location
+      }
+      const RequestBody = { password, src, args }
+      console.log('got address from storage for user:', this.state.username, '--->', this.state.address);
 
-      const address = await AsyncStorage.getItem('address');
-
-      await fetch(blocURL + username + '/' + address + '/contract?resolve', {
+      await fetch(blocURL + username + '/' + this.state.address + '/contract?resolve', {
         method: 'POST',
         body: JSON.stringify(RequestBody),
         headers: {
@@ -146,11 +151,11 @@ export class Confirmation extends Component<IProps, IState> {
       .then(json => {
         console.log(json);
         this.setState({
-          contractName: json.contractName,
-          address: json.address,
-          codeHash: json.codeHash,
+          isLoading: false,
+          status: json.status,
+          hash: json.hash,
         });
-        this.props.navigation.navigate('ContractDetail', {address: this.state.address})
+        this.props.navigation.navigate('Confirmation', {status: this.state.status, hash: this.state.hash})
       })
       .catch(function (error) {
         console.log('unable to create contract', error);
@@ -164,8 +169,10 @@ export class Confirmation extends Component<IProps, IState> {
     render() {
       return (
         <View style={styles.view}>
+
+
           <View style={styles.loginCard}> 
-            <Text style={styles.header}> Contract Builder </Text>
+            <Text style={styles.header}> Add Product </Text>
             <Input
                 placeholder='Username'
                 leftIcon={
@@ -183,7 +190,7 @@ export class Confirmation extends Component<IProps, IState> {
                 {/* TODO: DROPDOWN WITH CONTRACT TYPES, SETS STATE FOR CONTRACT SOURCE */}
   
                 <Input
-                placeholder='Contract Name'
+                placeholder='Origin Location'
                 leftIcon={
                   <Icon
                     name='info'
@@ -193,8 +200,8 @@ export class Confirmation extends Component<IProps, IState> {
                 }
     
                 containerStyle={styles.inputPadding}
-                onChangeText={(contractName) => this.setState({contractName})}
-                value={this.state.contractName}
+                onChangeText={(location) => this.setState({location})}
+                value={this.state.location}
                 />
 
                <Input
@@ -215,18 +222,20 @@ export class Confirmation extends Component<IProps, IState> {
               </View>
   
               <View>
-              <Button containerStyle={styles.buttonSignup}
-            icon={
-              <Icon
-                name='lock'
-                size={20}
-                color='white'
-              />
-            }
-            onPress={this.createEscrowContract}
-            title='DEPLOY CONTRACT'
-        />
-  
+            <Button containerStyle={styles.buttonSignup}
+              icon={
+                <Icon
+                  name='lock'
+                  size={20}
+                  color='white'
+                />
+                }
+                onPress={this.createEscrowContract}
+                title='DEPLOY CONTRACT'
+                loading={this.state.isLoading}
+                disabled={this.state.isLoading}
+                loadingStyle={styles.loading}
+            />
                
               <Toast ref="toast"
                   style={{backgroundColor:'#333333'}}
@@ -273,6 +282,20 @@ export class Confirmation extends Component<IProps, IState> {
 
 
   const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center'
+    },
+    horizontal: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      padding: 10
+    },
+    loading: {
+      alignSelf: 'center',
+      width: 300,
+      height: 50,
+    },
     view: {
       padding:10,
       height: '100%',
@@ -283,12 +306,12 @@ export class Confirmation extends Component<IProps, IState> {
     loginCard: {
       flex: 6,
       alignSelf: 'stretch',
-  
     },
     signupCard: {
       flex: 1,
     },
     header:{
+      padding: 15,
       marginTop: 12,
       fontSize: 22,
       alignSelf: 'center'
@@ -311,11 +334,7 @@ export class Confirmation extends Component<IProps, IState> {
       borderBottomWidth: 1,
       borderRadius: 5,
       padding: 5,
-  
     }
-  
-    
-  
   });
   
   

@@ -1,11 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import React, { Component } from 'react';
 import { Icon } from 'react-native-elements';
 import { StackNavigator, DrawerNavigator } from 'react-navigation';
@@ -24,10 +16,18 @@ import Camera from '../screens/Camera';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ContractListUpdatedActionCreator } from '../actions/ContractActions';
-import ContractService from '../services/ContractService';
 //import { AccountFaucetedActionCreator, IAccountFauceted } from '../actions/UserActions';
 //import UserService, { IAccountFauceted } from '../services/UserService';
 // @ts-ignore
+// SET GLOBAL PROPS //
+import { setCustomText } from 'react-native-global-props';
+const customTextProps = {
+    style: {
+        fontFamily: 'Avenir-Heavy'
+    }
+};
+setCustomText(customTextProps);
+// END SET GLOBAL PROPS //
 const InternalStack = StackNavigator({
     Confirmation: { screen: Confirmation,
         navigationOptions: ({ navigation }) => ({
@@ -76,16 +76,11 @@ export const RootStack = StackNavigator({
     initialRouteName: 'drawerStack'
 });
 export class App extends Component {
+    // monitoring services
+    // private contractService: UserService;
+    // private locationService: LocationService;
     constructor(props) {
         super(props);
-        this.gotNewContractList = this.gotNewContractList.bind(this);
-        this.contractService = new ContractService({ contractListUpdated: this.gotNewContractList });
-        this.contractService.StartMonitoring();
-    }
-    gotNewContractList(props) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.props.ContractListUpdated(props.contractList);
-        });
     }
     render() {
         return (React.createElement(View, { style: { flex: 1 } },

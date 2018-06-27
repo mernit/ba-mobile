@@ -2,40 +2,36 @@ pragma solidity ^0.4.8;
 
 
 contract SupplyChain {
+    uint m_uuid;
+    string m_location;
+    uint m_timestamp;
 
 
-    struct Item {
-        uint uuid;
-        string location;
-        uint timestamp; 
-    }
-    
-    Item[] public itemIndex;
-
-    mapping(uint => Item) public items;
-
-    function addItem(uint uuid, string location, uint timestamp) public returns (uint) {
-        timestamp = now;
-        items[uuid] = Item(uuid, location, timestamp);
-        itemIndex.push(Item(uuid, location, timestamp));
+    function SupplyChain(uint uuid, string location) public {
+        m_timestamp = now;
+        m_uuid = uuid;
+        m_location = location;
     }
 
-    function scanItem(uint uuid, string location, uint timestamp) public returns (bool success) {
-        timestamp = now;
-        items[uuid].location = location;
-        items[uuid].timestamp = timestamp;
+    function addItem(uint uuid, string location) public returns (uint) {
+        m_timestamp = now;
+        m_uuid = uuid;
+        m_location = location;
+    }
+
+    function scanItem(uint uuid, string location) public returns (bool success) {
+        m_timestamp = now;
+        m_uuid = uuid;
+        m_location = location;
         return true;
     }
 
     function getLocation(uint uuid) public returns (string) {
-        return items[uuid].location;
+        return m_location;
     }
     
-    function getItemInfo(uint uuid) public returns (uint, string, uint) {
-        return (items[uuid].uuid, items[uuid].location, items[uuid].timestamp);
+    function getItemInfo(uint uuid) public returns (string) {
+        return m_location;
     } 
 
-    function getItemCount() public constant returns(uint count) {
-        return itemIndex.length;
-    }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
 
 interface IProps {
@@ -7,9 +7,8 @@ interface IProps {
 }
 
 interface IState {
-    loading: boolean,
+    isLoading: boolean,
     username: string,
-    password: string, 
     contractAddress: string,
     contractName: string,
     address: any,
@@ -18,9 +17,12 @@ interface IState {
     value: string,
     method: string,
     args: string,
-    hash: string,
+    location: string,
+    timestamp: string,
     response: any,
     stateResponse: Array<any>,
+    currentLocation: any,
+    uuid: any,
 
 }
 
@@ -30,28 +32,30 @@ export default class ContractDetail extends Component<IProps, IState> {
 
     this.state = {
         stateResponse: [],
-        loading: true,
+        isLoading: false,
         storedData: '',
-        address: '',
+        address: this.props.navigation.getParam('address'),
         contractAddress: '',
         contractName: '',
         status: '',
         value: '',
         method: '',
         args: '',
-        hash: '',
+        location: '',
+        timestamp: '',
         response: [],
+        currentLocation: '',
         username: this.props.navigation.getParam('username'), // get uuid or address from camera
-        password: this.props.navigation.getParam('password'),
+        uuid: this.props.navigation.getParam('uuid'),
     }
 
     this.componentDidMount = this.componentDidMount.bind(this);
-    this.getContract = this.getContract.bind(this);
     this.callContract = this.callContract.bind(this);
+    this.getState = this.getState.bind(this);
     }
 
     componentWillMount() {
-      this.getState();
+      this.callContract();
       // this.callContract();
 
       // GET CONTRACT STATE VARIABLES 
@@ -62,48 +66,18 @@ export default class ContractDetail extends Component<IProps, IState> {
 
     }
 
-  getContract(){
-    const blocURL = 'localhost';
-    const contractName = this.state.contractName;
-    const contractAddress = this.state.contractAddress;
-
-    fetch(
-        blocURL + 
-        '/contracts' + 
-        contractName + 
-        contractAddress + 
-        '/state?length=', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-    })
-    .then(response => response.json())
-    .then(json => {
-      console.log(json);
-      this.setState({
-        storedData: json.storedData,
-      });
-    })
-    .catch(function (error) {
-      console.log('unable to call contract', error);
-      throw error;
-    });
-}
-
   // CALL CONTRACT 
 
   callContract() {
-    const blocURL = 'http://localhost/bloc/v2.2/users/';
+    const blocURL = 'http://tdlwv3y2cp.eastus2.cloudapp.azure.com/bloc/v2.2/users/';
     const username = 'Zabar';
     const password = "1234";
     const methodName = 'scanItem';
     const address = '87168271eb89f6d0282725681f7b724bde31c4f0';
-    const contractAddress = 'b823216ffb44fcea8eb4e2a53d7275eee8435aef';
+    const contractAddress = this.state.address;
     const callArgs = {
       location: 'riverdale',
-      uuid: '123456789',
+      uuid: this.state.uuid,
       timestamp: '1142',
     };
     
@@ -124,9 +98,10 @@ export default class ContractDetail extends Component<IProps, IState> {
     .then(json => {
       console.log(json);
       this.setState({
-        hash: json.hash,
         status: json.data.contents[1],
+        isLoading: false,
       });
+      this.getState();
     })
     .catch(function (error) {
       throw error;
@@ -134,23 +109,24 @@ export default class ContractDetail extends Component<IProps, IState> {
 }
 
 
-// TODO: FIGURE OUT WHY 405 IS RETURNED 
+// TODO: get new state after call?
 
 getState() {
-  const blocURL = 'http://localhost/bloc/v2.2/contracts/SupplyChain/b823216ffb44fcea8eb4e2a53d7275eee8435aef/state?name=itemIndex';
+  const blocURL = `http://localhost/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
   fetch(blocURL, {
     method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
   })
-  .then(function (response) {
-    console.log('got it', response);
-    return response;
+  .then(response => response.json())
+  .then(json => {
+    console.log(json);
+    this.setState({
+      uuid: json.itemIndex[0].uuid,
+      location: json.itemIndex[0].location,
+      currentLocation: json.itemIndex.slice(-1)[0].location,
+      timestamp: json.itemIndex[0].timestamp,
+    });
   })
   .catch(function (error) {
-    console.log('no luck', error);
     throw error;
   });
 }
@@ -159,20 +135,43 @@ getState() {
 
     render() {
       return (
-        <View style={styles.view}>
-          <Card containerStyle={styles.card}>
-            <Text style={styles.title}>Success!</Text>
-              <Icon 
-                name='done'
-                color='#00aced' 
-                />
-            <Text style={styles.title}>{this.state.status}</Text>
-            <Text style={styles.hash}>{this.state.hash}</Text>
 
+        <View style={styles.view}>
+
+          { this.state.isLoading && 
+
+          <ActivityIndicator />
+
+          }
+
+          <Card containerStyle={styles.card}>       
+            <Text style={styles.title}>
+            {this.state.location? 'VERIFIED' : 'UNVERIFIED'}
+            </Text>
+            <Icon 
+              iconStyle={styles.icon}
+              name={this.state.location ? 'check-circle' : 'info'}
+              size={72}
+              color={this.state.location ? 'green' : 'orange'}
+              />
+            <Text style={styles.subtitle}>Origin Location</Text>
+            <Text style={styles.location}>{this.state.location ? this.state.location : 'Location Unavailable'}</Text>
+            <Text style={styles.subtitle}>Current Location</Text>
+            <Text style={this.state.location ? styles.currentLocation : styles.location}>{this.state.currentLocation ? this.state.currentLocation : 'Location Unavailable'}</Text>
+            <Text style={styles.subtitle}>UUID</Text>
+            <Text style={styles.hash}>{this.state.uuid ? this.state.uuid : 'UUID Unavailable'}</Text>
               </Card>
-                <Button containerStyle={styles.buttonSignup}
-                    onPress={() => { this.props.navigation.navigate('Signup') } }
-                    title='Return to Contracts'
+                <Button 
+                  icon={
+                    <Icon
+                      name='history'
+                      size={25}
+                      color='white'
+                    />
+                  }
+                    containerStyle={styles.buttonSignup}
+                    onPress={() => { this.props.navigation.navigate('ContractList') } }
+                    title='RETURN TO CONTRACTS'
                 />
   
               </View>
@@ -204,21 +203,44 @@ getState() {
       alignItems: 'center',
       backgroundColor: '#ffffff'
     },
-    hash: {
-      fontSize: 16,
+    icon: {
+      padding: 15,
+      alignSelf: 'center',
     },
     card: {
-      height: '50%',
-      width: '75%',
+      flexDirection: 'column',
+      height: '80%',
+      width: '90%',
       borderRadius: 1,
       marginBottom: 30,
       borderColor: 'rgba(53,53,53,0.1)',
     },
     title: {
       alignSelf: 'center',
-      fontSize: 20,
+      fontSize: 36,
+      padding: 15,
+    },
+    subtitle: {
+      alignSelf: 'center',
       paddingTop: 20,
-      paddingBottom: 20,
+      fontSize: 14,
+    },
+    location: {
+      alignSelf: 'center',
+      padding: 5,
+      fontSize: 22,
+    },
+    currentLocation: {
+      alignSelf: 'center',
+      padding: 5,
+      fontSize: 22,
+      color: 'blue',
+
+    },
+    hash: {
+      alignSelf: 'center',
+      padding: 5,
+      fontSize: 22,
     },
     loginCard: {
       flex: 6,
@@ -236,30 +258,13 @@ getState() {
       alignSelf: 'center'
     },
     buttonSignup: {
-      backgroundColor: "rgba(92, 99,216, 1)",
       width: 300,
       height: 45,
-      borderColor: "transparent",
-      borderWidth: 0,
-      borderRadius: 3,
     },
-    buttonLogin: {
-      backgroundColor: "rgba(92, 99,216, 1)",
-      width: 100,
-      height: 45,
-      borderColor: "transparent",
-      borderWidth: 0,
-      borderRadius: 3,
-      alignSelf: 'center',
-      marginTop: 20
-    },
-  
-  
     inputPadding:{
       marginTop: 20,
       marginLeft: 15
     },
-  
     containerPadding: {
       borderColor:'#333333',
       borderTopWidth: 1,

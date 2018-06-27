@@ -13,23 +13,17 @@ export class Camera extends Component {
             scanSuccess: false,
             isLoading: false,
             torchMode: false,
+            address: this.props.navigation.getParam('address'),
+            userAddress: this.props.navigation.getParam('userAddress')
         };
         this.onBarCodeRead = this.onBarCodeRead.bind(this);
-        this.componentWillMount = this.componentWillMount.bind(this);
-        this.componentWillUnmount = this.componentWillUnmount.bind(this);
         this.toggleFlash = this.toggleFlash.bind(this);
     }
     onBarCodeRead(e) {
         this.setState({ uuid: e.data });
         // navigate to detail page 
-        this.props.navigation.navigate('ContractDetail', { uuid: this.state.uuid });
+        this.props.navigation.navigate('ContractDetail', { uuid: this.state.uuid, address: this.state.address, userAddress: this.state.userAddress });
         this.setState({ scanSuccess: true });
-    }
-    componentWillMount() {
-    }
-    componentWillUnmount() {
-    }
-    componentDidMount() {
     }
     toggleFlash() {
         this.state.torchMode == false ?
