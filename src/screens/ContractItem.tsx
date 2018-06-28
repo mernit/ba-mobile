@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
 
+const HOST_URL = 'http://192.168.1.167';
+
 interface IProps {
     navigation: any,
 }
@@ -52,18 +54,10 @@ export default class ContractItem extends Component<IProps, IState> {
 
     componentWillMount() {
       this.getState();
-      // this.callContract();
-
-      // GET CONTRACT STATE VARIABLES 
-
-      // USER CAN MODIFY STATE VARIABLES IN INPUT FIELDS
-
-      // CALL CONTRACT AND PUSH UPDATED STATE VARIABLES
-
     }
 
   getContract(){
-    const blocURL = 'localhost';
+    const blocURL = HOST_URL;
     const contractName = this.state.contractName;
     const contractAddress = this.state.contractAddress;
 
@@ -95,7 +89,7 @@ export default class ContractItem extends Component<IProps, IState> {
   // CALL CONTRACT 
 
   callContract() {
-    const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
+    const blocURL = HOST_URL + '/bloc/v2.2/users/';
     const username = 'Zabar';
     const password = "1234";
     const methodName = 'scanItem';
@@ -133,11 +127,8 @@ export default class ContractItem extends Component<IProps, IState> {
     });
 }
 
-
-// TODO: FIGURE OUT WHY 405 IS RETURNED 
-
 getState() {
-  const blocURL = 'http://10.119.106.130/bloc/v2.2/contracts/SupplyChain/b823216ffb44fcea8eb4e2a53d7275eee8435aef/state?name=itemIndex';
+  const blocURL = HOST_URL + '/bloc/v2.2/contracts/SupplyChain/b823216ffb44fcea8eb4e2a53d7275eee8435aef/state?name=itemIndex';
   fetch(blocURL, {
     method: 'GET',
     headers: {

@@ -1,1 +1,0 @@
-{"version":3,"file":"InitialState.js","sourceRoot":"","sources":["../../src/reducers/InitialState.ts"],"names":[],"mappings":"AAEA,MAAM,YAAY,GAAgB;IAChC,GAAG,EAAE,EAAE;IACP,QAAQ,EAAE,KAAK;IACf,OAAO,EAAE,EAAE;IACX,YAAY,EAAE,EAAE;CACjB,CAAC;AAEF,eAAe,YAAY,CAAC"}

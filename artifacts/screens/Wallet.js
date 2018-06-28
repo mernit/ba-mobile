@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Button, ActivityIndicator, View, StyleSheet, Text } from 'react-native';
-import { connect } from 'react-redux';
 export class Wallet extends Component {
     constructor(props) {
         super(props);
@@ -63,16 +62,6 @@ export class Wallet extends Component {
     }
 }
 ;
-// @ts-ignore
-function mapStateToProps(state) {
-    // @ts-ignore
-    return {};
-}
-// @ts-ignore
-function mapDispatchToProps(dispatch) {
-    return {};
-}
-export default connect(mapStateToProps, mapDispatchToProps)(Wallet);
 const styles = StyleSheet.create({
     mainView: {
         flex: 1

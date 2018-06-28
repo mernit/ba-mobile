@@ -5,11 +5,8 @@ import Loading from '../components/Loading';
 import ViewFinder from 'react-native-view-finder'
 import Icon from 'react-native-vector-icons/Entypo';
 import Geocoder from 'react-native-geocoder';
-
-import IStoreState from '../store/IStoreState';
-import { connect, Dispatch } from 'react-redux';
-
 // import { List, ListItem } from 'react-native-elements';
+
 interface IProps {
   navigation: any,
 }
@@ -28,7 +25,7 @@ interface IState {
   password: string
 }
 
-export class Camera extends Component<IProps, IState> {
+export default class Camera extends Component<IProps, IState> {
   constructor(props: IProps){
     super(props);
 
@@ -135,22 +132,6 @@ export class Camera extends Component<IProps, IState> {
     );
   }
 }
-
- // @ts-ignore
- function mapStateToProps(state: IStoreState): IProps {
-  // @ts-ignore
-  return {
-    //visitedNodeList: state.visitedNodeList
-  };
-}
-
-// @ts-ignore
-function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-  return {
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Camera);
 
 const styles = StyleSheet.create({
   container: {

@@ -23,6 +23,9 @@ pod 'React', :path => '../node_modules/react-native', :subspecs => [
 
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
+
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
 end
 
 post_install do |installer|

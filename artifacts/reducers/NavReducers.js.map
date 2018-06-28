@@ -1,1 +1,0 @@
-{"version":3,"file":"NavReducers.js","sourceRoot":"","sources":["../../src/reducers/NavReducers.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,mBAAmB,CAAC;AAE9C,MAAM,qBAAqB,KAAK,EAAE,MAAM;IACtC,MAAM,QAAQ,GAAG,SAAS,CAAC,MAAM,CAAC,iBAAiB,CAAC,MAAM,EAAE,KAAK,CAAC,CAAA;IAClE,OAAO,QAAQ,IAAI,KAAK,CAAA;AAC1B,CAAC"}

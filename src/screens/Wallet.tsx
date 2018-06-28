@@ -2,11 +2,6 @@ import React, { Component } from 'react';
 import { Button, ActivityIndicator, View, StyleSheet, Text } from 'react-native';
 // import * as HttpStatus from 'http-status-codes';
 
-// import Logger from '../services/Logger';
-
-import IStoreState from '../store/IStoreState';
-import { connect, Dispatch } from 'react-redux';
-
 // import { List, ListItem } from 'react-native-elements';
 
 // const getUserInfoURL = 'http://localhost/strato-api/eth/v1.2/account?address='
@@ -112,23 +107,6 @@ export class Wallet extends Component<IProps, IState> {
           )
         }
       };
-
-
- // @ts-ignore
- function mapStateToProps(state: IStoreState): IProps {
-    // @ts-ignore
-    return {
-    };
-  }
-  
-  
-  // @ts-ignore
-  function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-    return {
-    };
-  }
-  
-  export default connect(mapStateToProps, mapDispatchToProps)(Wallet);
 
 
   const styles = StyleSheet.create({

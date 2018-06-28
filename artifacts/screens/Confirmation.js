@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
+const HOST_URL = 'http://192.168.1.167';
 export default class Confirmation extends Component {
     constructor(props) {
         super(props);
@@ -37,7 +38,7 @@ export default class Confirmation extends Component {
     }
     // CALL CONTRACT 
     callContract() {
-        const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
+        const blocURL = HOST_URL + '/bloc/v2.2/users/';
         const username = 'Zabar';
         const password = "1234";
         const methodName = 'scanItem';
@@ -73,7 +74,7 @@ export default class Confirmation extends Component {
         });
     }
     getState() {
-        const blocURL = `http://10.119.106.130/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
+        const blocURL = HOST_URL + `/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
         fetch(blocURL, {
             method: 'GET',
         })
@@ -96,21 +97,14 @@ export default class Confirmation extends Component {
             React.createElement(Card, { containerStyle: styles.card },
                 React.createElement(Text, { style: styles.title }, this.state.hash ? 'PENDING' : 'UNKNOWN'),
                 React.createElement(Icon, { iconStyle: styles.icon, name: this.state.hash ? 'check-circle' : 'info', size: 72, color: this.state.hash ? 'green' : 'orange' }),
-                React.createElement(Text, { style: styles.subtitle }, "Transaction Hash"),
-                React.createElement(Text, { style: styles.location }, this.state.hash ? this.state.hash : 'Hash Unavailable')),
-            React.createElement(Button, { icon: React.createElement(Icon, { name: 'link', size: 25, color: 'white' }), containerStyle: styles.buttonSignup, onPress: () => { this.props.navigation.navigate('ContractList'); }, title: 'RETURN TO PRODUCT LIST' })));
+                React.createElement(Text, { numberOfLines: 2, ellipsizeMode: 'tail', style: styles.subtitle }, "Transaction Hash"),
+                React.createElement(Text, { style: styles.location }, this.state.hash ? this.state.hash : 'Hash Unavailable'),
+                React.createElement(Text, { numberOfLines: 2, style: styles.subtitle }, "Origin Location"),
+                React.createElement(Text, { style: styles.location }, this.state.location ? this.state.location : 'Location Unavailable')),
+            React.createElement(Button, { icon: React.createElement(Icon, { name: 'history', size: 25, color: 'white' }), containerStyle: styles.buttonSignup, onPress: () => { this.props.navigation.navigate('ContractList'); }, title: 'Return to Contracts' })));
     }
 }
 ;
-// @ts-ignore
-function mapStateToProps(state) {
-    // @ts-ignore
-    return {};
-}
-// @ts-ignore
-function mapDispatchToProps(dispatch) {
-    return {};
-}
 const styles = StyleSheet.create({
     view: {
         padding: 10,

@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
 import { Button, View, StyleSheet, Text } from 'react-native';
 // import * as HttpStatus from 'http-status-codes';
-
-// import Logger from '../services/Logger';
-
-import IStoreState from '../store/IStoreState';
-import { connect, Dispatch } from 'react-redux';
-
 // import { List, ListItem } from 'react-native-elements';
 
 interface IProps {
@@ -122,23 +116,6 @@ export class Confirmation extends Component<IProps, IState> {
           )
         }
       };
-
-
- // @ts-ignore
- function mapStateToProps(state: IStoreState): IProps {
-    // @ts-ignore
-    return {
-    };
-  }
-  
-  
-  // @ts-ignore
-  function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-    return {
-    };
-  }
-  
-  export default connect(mapStateToProps, mapDispatchToProps)(Confirmation);
 
 
   // const styles = StyleSheet.create({

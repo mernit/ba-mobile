@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
 
+const HOST_URL = 'http://192.168.1.167';
+
+
 interface IProps {
     navigation: any,
 }
@@ -71,7 +74,7 @@ export default class Contract extends Component<IProps, IState> {
   // CALL CONTRACT 
 
   callContract() {
-    const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
+    const blocURL = HOST_URL + '/bloc/v2.2/users/';
     const username = 'Zabar';
     const password = "1234";
     const methodName = 'scanItem';
@@ -109,7 +112,7 @@ export default class Contract extends Component<IProps, IState> {
 }
 
 getState() {
-  const blocURL = `http://10.119.106.130/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
+  const blocURL = HOST_URL + `/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
   fetch(blocURL, {
     method: 'GET',
   })
@@ -171,22 +174,6 @@ getState() {
               )
         }
   };
-
-
- // @ts-ignore
- function mapStateToProps(state: IStoreState): IProps {
-    // @ts-ignore
-    return {
-    };
-  }
-  
-  
-  // @ts-ignore
-  function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-    return {
-    };
-  }
-
 
   const styles = StyleSheet.create({
     view: {

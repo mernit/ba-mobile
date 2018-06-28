@@ -10,15 +10,16 @@ import React, { Component } from 'react';
 import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { ListItem, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
+const HOST_URL = 'http://192.168.1.167';
 export default class ContractList extends Component {
     constructor(props) {
         super(props);
-        this.renderItem = ({ item }) => (React.createElement(ListItem, { onPress: () => this.onTouchContract(item), containerStyle: styles.contractListItem, rightIcon: { name: 'chevron-right', color: "rgba(51, 51, 51, 0.8)" }, title: item.address, 
+        this.renderItem = ({ item }) => (React.createElement(ListItem, { onPress: () => this.onTouchContract(item), containerStyle: styles.contractListItem, rightIcon: { name: 'chevron-right', color: "rgba(51, 51, 51, 0.8)" }, title: React.createElement(Text, { numberOfLines: 1, ellipsizeMode: 'head', style: styles.addressText }, item.address), 
             // badge={{ value: 3, textStyle: { color: 'white' }, containerStyle: { marginTop: -20 } }}
             subtitle: React.createElement(View, { style: styles.subtitleView },
                 React.createElement(Text, { style: styles.ratingText },
                     "Last Updated: ",
-                    item.createdAt)) }));
+                    new Date(item.createdAt * 1000).toString().slice(3, 15))) }));
         this.state = {
             username: this.props.navigation.getParam('username'),
             password: this.props.navigation.getParam('password'),
@@ -39,7 +40,7 @@ export default class ContractList extends Component {
     }
     faucet() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield fetch('http://10.119.106.130/strato-api/eth/v1.2/faucet', {
+            yield fetch(HOST_URL + '/strato-api/eth/v1.2/faucet', {
                 method: 'POST',
                 body: `address=${this.state.address}`,
                 headers: {
@@ -63,7 +64,7 @@ export default class ContractList extends Component {
                 console.log('turning on the faucet for', this.state.address);
             }
             console.log('getting contract list...');
-            const blocURL = 'http://10.119.106.130/bloc/v2.2/contracts/';
+            const blocURL = HOST_URL + '/bloc/v2.2/contracts/';
             yield fetch(blocURL, {
                 method: 'GET',
                 headers: {
@@ -76,9 +77,8 @@ export default class ContractList extends Component {
                 console.log(json);
                 this.setState({
                     data: json.SupplyChain,
-                    timestamp: json.SupplyChain.createdAt,
+                    timestamp: new Date(json.SupplyChain.createdAt * 1000).toString().slice(3, 25),
                 });
-                this.setState({ timestamp: new Date(this.state.timestamp * 1000).toString() });
                 console.log('got contracts!', this.state.data);
             })
                 .catch(function (error) {
@@ -101,7 +101,7 @@ export default class ContractList extends Component {
                 React.createElement(ActivityIndicator, null),
             this.state.data.length == 0 &&
                 React.createElement(Text, { style: styles.null }, "No packages have been created yet"),
-            React.createElement(FlatList, { data: this.state.data, renderItem: this.renderItem, keyExtractor: item => item.id, refreshing: this.state.isLoading, onRefresh: () => this.getContracts() }),
+            React.createElement(FlatList, { data: this.state.data, renderItem: this.renderItem, keyExtractor: item => item.address, refreshing: this.state.isLoading, onRefresh: () => this.getContracts() }),
             React.createElement(View, { style: styles.buttonContainer },
                 React.createElement(Button, { containerStyle: styles.buttonSignup, icon: React.createElement(Icon, { name: 'plus', size: 15, color: 'white' }), onPress: () => { this.props.navigation.navigate('ContractBuilder'); }, title: 'Add Package' }))));
     }
@@ -130,7 +130,9 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     subtitleView: {},
+    addressText: {},
     ratingText: {
+        color: 'gray',
         paddingTop: 5,
     },
     buttonSignup: {

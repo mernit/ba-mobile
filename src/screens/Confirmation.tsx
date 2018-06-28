@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
 
+const HOST_URL = 'http://192.168.1.167';
+
 interface IProps {
     navigation: any,
 }
@@ -72,7 +74,7 @@ export default class Confirmation extends Component<IProps, IState> {
   // CALL CONTRACT 
 
   callContract() {
-    const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
+    const blocURL = HOST_URL + '/bloc/v2.2/users/';
     const username = 'Zabar';
     const password = "1234";
     const methodName = 'scanItem';
@@ -110,7 +112,7 @@ export default class Confirmation extends Component<IProps, IState> {
 }
 
 getState() {
-  const blocURL = `http://10.119.106.130/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
+  const blocURL = HOST_URL + `/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
   fetch(blocURL, {
     method: 'GET',
   })
@@ -143,20 +145,22 @@ getState() {
               size={72}
               color={this.state.hash ? 'green' : 'orange'}
               />
-            <Text style={styles.subtitle}>Transaction Hash</Text>
+            <Text numberOfLines={2} ellipsizeMode={'tail'} style={styles.subtitle}>Transaction Hash</Text>
             <Text style={styles.location}>{this.state.hash ? this.state.hash : 'Hash Unavailable'}</Text>
+            <Text numberOfLines={2} style={styles.subtitle}>Origin Location</Text>
+            <Text style={styles.location}>{this.state.location ? this.state.location : 'Location Unavailable'}</Text>
               </Card>
                 <Button 
                   icon={
                     <Icon
-                      name='link'
+                      name='history'
                       size={25}
                       color='white'
                     />
                   }
                     containerStyle={styles.buttonSignup}
                     onPress={() => { this.props.navigation.navigate('ContractList') } }
-                    title='RETURN TO PRODUCT LIST'
+                    title='Return to Contracts'
                 />
   
               </View>
@@ -164,21 +168,6 @@ getState() {
               )
         }
   };
-
-
- // @ts-ignore
- function mapStateToProps(state: IStoreState): IProps {
-    // @ts-ignore
-    return {
-    };
-  }
-  
-  
-  // @ts-ignore
-  function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-    return {
-    };
-  }
 
 
   const styles = StyleSheet.create({

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
 
 // ********* START HANDY ASYNC CODE ********* //
@@ -14,6 +14,8 @@ import { Icon, Button, Card } from 'react-native-elements';
 
 // ********* END HAND ASYNC CODE ********* //
 
+const HOST_URL = 'http://192.168.1.167';
+
 interface IProps {
     navigation: any,
 }
@@ -24,15 +26,11 @@ interface IState {
     username: string,
     contractName: string,
     address: any,
-    storedData: string,
     status: string,
-    value: string,
     method: string,
     args: string,
     location: string,
     timestamp: any,
-    response: any,
-    stateResponse: Array<any>,
     currentLocation: any,
     uuid: any,
     userAddress: string,
@@ -45,24 +43,20 @@ export default class ContractDetail extends Component<IProps, IState> {
 
     this.state = {
         password: this.props.navigation.getParam('password'),
-        stateResponse: [],
         isLoading: false,
-        storedData: '',
         address: this.props.navigation.getParam('address'),
         userAddress: this.props.navigation.getParam('userAddress'),
         contractName: '',
         status: '',
-        value: '',
         method: '',
         args: '',
         timestamp: '',
-        response: [],
         currentLocation: '',
         location: this.props.navigation.getParam('location'),
         username: this.props.navigation.getParam('username'), // get uuid or address from camera
         uuid: this.props.navigation.getParam('uuid'),
     }
-
+      this.componentWillMount = this.componentWillMount.bind(this);
       this.componentDidMount = this.componentDidMount.bind(this);
       this.callContract = this.callContract.bind(this);
       this.getState = this.getState.bind(this);
@@ -73,12 +67,15 @@ export default class ContractDetail extends Component<IProps, IState> {
         this.setState({isLoading: true});
     }
 
+    componentDidMount() {
+        this.getState();
+    }
 
-    async callContract() {
+    callContract() {
       //Alert.alert(JSON.stringify('calling contract...'))
-      const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
-      const username = this.state.username;
-      const password = this.state.password;
+      const blocURL = HOST_URL + '/bloc/v2.2/users/';
+      const username = this.state.username ? this.state.username : 'Mernit';
+      const password = this.state.password ? this.state.password : '1234';
       const methodName = 'scanItem';
       const address = this.state.address;
       const userAddress = this.state.userAddress;
@@ -86,7 +83,7 @@ export default class ContractDetail extends Component<IProps, IState> {
         location: this.state.location, // update with user location
         uuid: this.state.uuid, // update uuid with location
       };
-      await fetch(blocURL + username + '/' + userAddress + '/contract/SupplyChain/' + address + '/call?resolve', {
+      fetch(blocURL + username + '/' + userAddress + '/contract/SupplyChain/' + address + '/call?resolve', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -100,21 +97,16 @@ export default class ContractDetail extends Component<IProps, IState> {
         })
       })
       .then(function(response) {
-        //Alert.alert(JSON.stringify(response))
         console.log(response);
-        this.setState({
-          isLoading: false,
-        });
-        this.getState();
+        //this.getState();
       })
       .catch(function(error) {
-        //Alert.alert(JSON.stringify(error))
         console.log(error);
       });
     }
   
     getState() {
-      const blocURL = `http://10.119.106.130/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
+      const blocURL = HOST_URL + `/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
       fetch(blocURL, {
         method: 'GET',
       })
@@ -125,7 +117,7 @@ export default class ContractDetail extends Component<IProps, IState> {
           location: json.m_location,
           uuid: json.m_uuid,
           timestamp: json.m_timestamp,
-          isLoading: false,
+          isLoading: false
         });
       })
       .catch(function (error) {
@@ -135,26 +127,31 @@ export default class ContractDetail extends Component<IProps, IState> {
 
     render() {
       let timestamp = new Date(this.state.timestamp * 1000).toString().slice(3, 25);
+
       return (
 
         <View style={styles.view}>
 
-          {/* { this.state.isLoading && 
-
-          <Loading />
-
-          } */}
-
           <Card containerStyle={styles.card}>       
             <Text style={styles.title}>
-            {this.state.location? 'VERIFIED' : 'UNVERIFIED'}
+            {this.state.timestamp ? 'VERIFIED' : 'UNVERIFIED'}
             </Text>
+            
+            {this.state.isLoading ?
+
+            <View style={styles.loading}>
+            <ActivityIndicator size="large" />
+            </View> :
+            
             <Icon 
               iconStyle={styles.icon}
-              name={this.state.location ? 'check-circle' : 'info'}
+              name={this.state.timestamp ? 'check-circle' : 'info'}
               size={72}
-              color={this.state.location ? 'green' : 'orange'}
+              color={this.state.timestamp ? 'green' : 'orange'}
               />
+
+              }
+
             <Text style={styles.subtitle}>UUID</Text>
             <Text style={styles.location} numberOfLines={1}>{this.state.uuid ? this.state.uuid : 'UUID Unavailable'}</Text>
             <Text style={styles.subtitle}>Current Location</Text>
@@ -182,25 +179,9 @@ export default class ContractDetail extends Component<IProps, IState> {
                 />
   
               </View>
-           
-              )
-        }
+          )
+      }
   };
-
-
- // @ts-ignore
- function mapStateToProps(state: IStoreState): IProps {
-    // @ts-ignore
-    return {
-    };
-  }
-  
-  
-  // @ts-ignore
-  function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-    return {
-    };
-  }
 
 
   const styles = StyleSheet.create({
@@ -208,6 +189,10 @@ export default class ContractDetail extends Component<IProps, IState> {
       padding:10,
       flex: 1,
       alignItems: 'center',
+    },
+    loading: {
+      padding: 20,
+      alignSelf: 'center',
     },
     icon: {
       padding: 15,
@@ -241,8 +226,6 @@ export default class ContractDetail extends Component<IProps, IState> {
       alignSelf: 'center',
       padding: 5,
       fontSize: 22,
-      color: 'blue',
-
     },
     hash: {
       alignSelf: 'center',

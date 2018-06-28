@@ -7,27 +7,27 @@
 		<key>Google-Maps-iOS-Utils.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>40</integer>
+			<integer>2</integer>
 		</dict>
 		<key>Pods-MobileApp.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>41</integer>
+			<integer>3</integer>
 		</dict>
 		<key>react-native-google-maps.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>42</integer>
+			<integer>4</integer>
 		</dict>
 		<key>react-native-maps.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>43</integer>
+			<integer>5</integer>
 		</dict>
 		<key>yoga.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>44</integer>
+			<integer>6</integer>
 		</dict>
 	</dict>
 </dict>

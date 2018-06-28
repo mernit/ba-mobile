@@ -13,8 +13,7 @@ import Loading from '../components/Loading';
 import ViewFinder from 'react-native-view-finder';
 import Icon from 'react-native-vector-icons/Entypo';
 import Geocoder from 'react-native-geocoder';
-import { connect } from 'react-redux';
-export class Camera extends Component {
+export default class Camera extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -88,18 +87,6 @@ export class Camera extends Component {
                 React.createElement(Icon, { name: 'flashlight', size: 35, color: 'rgba(44,55,71,1.0)' }))));
     }
 }
-// @ts-ignore
-function mapStateToProps(state) {
-    // @ts-ignore
-    return {
-    //visitedNodeList: state.visitedNodeList
-    };
-}
-// @ts-ignore
-function mapDispatchToProps(dispatch) {
-    return {};
-}
-export default connect(mapStateToProps, mapDispatchToProps)(Camera);
 const styles = StyleSheet.create({
     container: {
         flex: 1,

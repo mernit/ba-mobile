@@ -16,11 +16,6 @@ import Signup from '../screens/Signup';
 import SideBar from '../components/SideBar';
 import Camera from '../screens/Camera'
 
-import IStoreState from '../store/IStoreState';
-import { connect, Dispatch } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { ContractListUpdatedActionCreator } from '../actions/ContractActions';
-
 //import { AccountFaucetedActionCreator, IAccountFauceted } from '../actions/UserActions';
 
 //import UserService, { IAccountFauceted } from '../services/UserService';
@@ -97,12 +92,11 @@ export const RootStack = StackNavigator({
 
 
 interface IProps{
-  ContractListUpdated: (contractList: Array<any>) => (dispatch: Dispatch<IStoreState>) => Promise<void>
-  contractList: Array<any>
+
 }
 
 
-export class App extends Component<IProps> {
+export default class App extends Component<IProps> {
     // monitoring services
     // private contractService: UserService;
     // private locationService: LocationService;
@@ -125,23 +119,6 @@ export class App extends Component<IProps> {
       }
   }
 
-// @ts-ignore
-function mapStateToProps(state: IStoreState): IProps { 
-  // @ts-ignore
-  return {
-    contractList: state.contractList,
-    //balance: state.balance,
-  };
-}
-
-function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-  return {
-    ContractListUpdated: bindActionCreators(ContractListUpdatedActionCreator, dispatch),
-    //AccountFauceted: bindActionCreators(AccountFaucetedActionCreator, dispatch),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
 
 /*
 const styles = StyleSheet.create({

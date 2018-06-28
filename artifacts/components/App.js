@@ -13,9 +13,6 @@ import Contract from '../screens/Contract';
 import Signup from '../screens/Signup';
 import SideBar from '../components/SideBar';
 import Camera from '../screens/Camera';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { ContractListUpdatedActionCreator } from '../actions/ContractActions';
 //import { AccountFaucetedActionCreator, IAccountFauceted } from '../actions/UserActions';
 //import UserService, { IAccountFauceted } from '../services/UserService';
 // @ts-ignore
@@ -75,7 +72,7 @@ export const RootStack = StackNavigator({
     title: 'Main',
     initialRouteName: 'drawerStack'
 });
-export class App extends Component {
+export default class App extends Component {
     // monitoring services
     // private contractService: UserService;
     // private locationService: LocationService;
@@ -88,19 +85,6 @@ export class App extends Component {
             React.createElement(RootStack, null)));
     }
 }
-// @ts-ignore
-function mapStateToProps(state) {
-    // @ts-ignore
-    return {
-        contractList: state.contractList,
-    };
-}
-function mapDispatchToProps(dispatch) {
-    return {
-        ContractListUpdated: bindActionCreators(ContractListUpdatedActionCreator, dispatch),
-    };
-}
-export default connect(mapStateToProps, mapDispatchToProps)(App);
 /*
 const styles = StyleSheet.create({
   statusBar: {

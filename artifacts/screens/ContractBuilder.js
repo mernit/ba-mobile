@@ -10,10 +10,10 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, AsyncStorage } from 'react-native';
 import { Input, Button, Card } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Toast from 'react-native-easy-toast'; // import * as HttpStatus from 'http-status-codes';
+import Toast from 'react-native-easy-toast';
 import Geocoder from 'react-native-geocoder';
-import { connect } from 'react-redux';
-export class Confirmation extends Component {
+const HOST_URL = 'http://192.168.1.167';
+export default class Confirmation extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -51,16 +51,17 @@ export class Confirmation extends Component {
         });
     }
     ;
-    //let address = AsyncStorage.getItem('address');
-    //console.log('got address from storage', address)
     getUserLocation() {
         return __awaiter(this, void 0, void 0, function* () {
             const position = { lat: this.state.lat, lng: this.state.lng };
             console.log('got position', position);
             const response = yield Geocoder.geocodePosition(position);
-            console.log('got response from geocoder', response[0].locality);
-            this.setState({ location: response[0].locality });
+            console.log('got response from geocoder', response[0]);
+            this.setState({ location: response[0].formattedAddress });
         });
+    }
+    catch(error) {
+        console.log('could not get user location', error);
     }
     createEscrowContract() {
         // TODO: user can select contract from drop down options
@@ -111,20 +112,7 @@ export class Confirmation extends Component {
           } 
       
       }`;
-            // const src = 
-            // `contract ${this.state.contractName} {
-            //   uint storedData;
-            //   function SimpleStorage() {
-            //     storedData = 1;
-            //   }
-            //   function set(uint x) {
-            //     storedData = x;
-            //   }
-            //   function get() constant returns (uint) {
-            //     return storedData;
-            //   }
-            // }`;
-            const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
+            const blocURL = HOST_URL + '/bloc/v2.2/users/';
             const username = this.state.username;
             const password = this.state.password;
             const uuid = Math.random().toString().slice(2, 11);
@@ -152,7 +140,7 @@ export class Confirmation extends Component {
                     status: json.status,
                     hash: json.hash,
                 });
-                this.props.navigation.navigate('Confirmation', { status: this.state.status, hash: this.state.hash });
+                this.props.navigation.navigate('Confirmation', { location: this.state.location, status: this.state.status, hash: this.state.hash });
             })
                 .catch(function (error) {
                 console.log('unable to create contract', error);
@@ -177,16 +165,6 @@ export class Confirmation extends Component {
     }
 }
 ;
-// @ts-ignore
-function mapStateToProps(state) {
-    // @ts-ignore
-    return {};
-}
-// @ts-ignore
-function mapDispatchToProps(dispatch) {
-    return {};
-}
-export default connect(mapStateToProps, mapDispatchToProps)(Confirmation);
 const styles = StyleSheet.create({
     container: {
         flex: 1,

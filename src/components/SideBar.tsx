@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import IStoreState from '../store/IStoreState';
-import { connect, Dispatch } from 'react-redux';
 import {ListItem} from 'react-native-elements';
 import {NavigationActions} from 'react-navigation';
 
+const HOST_URL = 'http://192.168.1.167';
 
 interface IProps {
     navigation?: any,
@@ -19,7 +18,7 @@ interface IState {
   isVisible: boolean
 }
 
-export class SideBar extends Component<IProps, IState> {
+export default class SideBar extends Component<IProps, IState> {
   resetAction: any
     constructor(props: IProps){
         super(props);
@@ -40,7 +39,7 @@ export class SideBar extends Component<IProps, IState> {
     }
 
     componentDidMount() {
-        fetch('http://10.119.106.130/apex-api/status', {
+        fetch(HOST_URL + '/apex-api/status', {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -168,20 +167,6 @@ export class SideBar extends Component<IProps, IState> {
 };
 
 
-export function mapStateToProps(state: IStoreState): IProps {
-  // @ts-ignore
-  return {
-    loggedIn: state.loggedIn
-  };
-}
-
-// @ts-ignore
-export function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-  return {
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(SideBar);
 
 const styles = StyleSheet.create({
   view: {

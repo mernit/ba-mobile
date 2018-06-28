@@ -2,12 +2,10 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, AsyncStorage } from 'react-native';
 import { Input, Button, Card } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Toast from 'react-native-easy-toast';// import * as HttpStatus from 'http-status-codes';
+import Toast from 'react-native-easy-toast';
 import Geocoder from 'react-native-geocoder';
-// import Logger from '../services/Logger';
 
-import IStoreState from '../store/IStoreState';
-import { connect, Dispatch } from 'react-redux';
+const HOST_URL = 'http://192.168.1.167';
 
 // import { List, ListItem } from 'react-native-elements';
 
@@ -34,7 +32,7 @@ interface IState {
     userLocation: Array<any>
   }
 
-export class Confirmation extends Component<IProps, IState> {
+export default class Confirmation extends Component<IProps, IState> {
   constructor(props: IProps){
     super(props);
 
@@ -75,17 +73,16 @@ export class Confirmation extends Component<IProps, IState> {
           this.getUserLocation();
         });
       };
-
-      //let address = AsyncStorage.getItem('address');
-      //console.log('got address from storage', address)
-
-  
+    
     async getUserLocation() {
       const position = {lat: this.state.lat, lng: this.state.lng}
       console.log('got position', position)
       const response = await Geocoder.geocodePosition(position);
-      console.log('got response from geocoder', response[0].locality)
-      this.setState({location: response[0].locality})
+      console.log('got response from geocoder', response[0])
+      this.setState({location: response[0].formattedAddress})
+    }
+    catch(error) {
+      console.log('could not get user location', error);
     }
 
     createEscrowContract() { 
@@ -138,23 +135,7 @@ export class Confirmation extends Component<IProps, IState> {
           } 
       
       }`;
-      // const src = 
-      // `contract ${this.state.contractName} {
-      //   uint storedData;
-      
-      //   function SimpleStorage() {
-      //     storedData = 1;
-      //   }
-      
-      //   function set(uint x) {
-      //     storedData = x;
-      //   }
-      
-      //   function get() constant returns (uint) {
-      //     return storedData;
-      //   }
-      // }`;
-      const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
+      const blocURL = HOST_URL + '/bloc/v2.2/users/';
       const username = this.state.username;
       const password = this.state.password;
       const uuid = Math.random().toString().slice(2,11);
@@ -183,7 +164,7 @@ export class Confirmation extends Component<IProps, IState> {
           status: json.status,
           hash: json.hash,
         });
-        this.props.navigation.navigate('Confirmation', {status: this.state.status, hash: this.state.hash})
+        this.props.navigation.navigate('Confirmation', {location: this.state.location, status: this.state.status, hash: this.state.hash})
       })
       .catch(function (error) {
         console.log('unable to create contract', error);
@@ -291,24 +272,6 @@ export class Confirmation extends Component<IProps, IState> {
       )
     }
   };
-
-
- // @ts-ignore
- function mapStateToProps(state: IStoreState): IProps {
-    // @ts-ignore
-    return {
-    };
-  }
-  
-  
-  // @ts-ignore
-  function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-    return {
-    };
-  }
-  
-  export default connect(mapStateToProps, mapDispatchToProps)(Confirmation);
-
 
   const styles = StyleSheet.create({
     container: {

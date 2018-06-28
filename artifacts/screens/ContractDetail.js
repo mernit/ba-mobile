@@ -1,36 +1,34 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
+// ********* START HANDY ASYNC CODE ********* //
+// return AsyncStorage.getItem(`${this.state.username}`)
+// .then(req => JSON.parse(req))
+// .then(json => this.setState({username: json}))
+// console.log('got json back from async storage', this.state.username);
+//console.log('user saved in storage', AsyncStorage.getItem(`${this.state.username}`));
+//const username = await AsyncStorage.getItem(`${this.state.address}`)
+// ********* END HAND ASYNC CODE ********* //
+const HOST_URL = 'http://192.168.1.167';
 export default class ContractDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
             password: this.props.navigation.getParam('password'),
-            stateResponse: [],
             isLoading: false,
-            storedData: '',
             address: this.props.navigation.getParam('address'),
             userAddress: this.props.navigation.getParam('userAddress'),
             contractName: '',
             status: '',
-            value: '',
             method: '',
             args: '',
             timestamp: '',
-            response: [],
             currentLocation: '',
             location: this.props.navigation.getParam('location'),
             username: this.props.navigation.getParam('username'),
             uuid: this.props.navigation.getParam('uuid'),
         };
+        this.componentWillMount = this.componentWillMount.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.callContract = this.callContract.bind(this);
         this.getState = this.getState.bind(this);
@@ -39,48 +37,44 @@ export default class ContractDetail extends Component {
         this.callContract();
         this.setState({ isLoading: true });
     }
+    componentDidMount() {
+        this.getState();
+    }
     callContract() {
-        return __awaiter(this, void 0, void 0, function* () {
-            //Alert.alert(JSON.stringify('calling contract...'))
-            const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
-            const username = this.state.username;
-            const password = this.state.password;
-            const methodName = 'scanItem';
-            const address = this.state.address;
-            const userAddress = this.state.userAddress;
-            const callArgs = {
-                location: this.state.location,
-                uuid: this.state.uuid,
-            };
-            yield fetch(blocURL + username + '/' + userAddress + '/contract/SupplyChain/' + address + '/call?resolve', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    password: password,
-                    method: methodName,
-                    value: "0",
-                    args: callArgs
-                })
+        //Alert.alert(JSON.stringify('calling contract...'))
+        const blocURL = HOST_URL + '/bloc/v2.2/users/';
+        const username = this.state.username ? this.state.username : 'Mernit';
+        const password = this.state.password ? this.state.password : '1234';
+        const methodName = 'scanItem';
+        const address = this.state.address;
+        const userAddress = this.state.userAddress;
+        const callArgs = {
+            location: this.state.location,
+            uuid: this.state.uuid,
+        };
+        fetch(blocURL + username + '/' + userAddress + '/contract/SupplyChain/' + address + '/call?resolve', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                password: password,
+                method: methodName,
+                value: "0",
+                args: callArgs
             })
-                .then(function (response) {
-                //Alert.alert(JSON.stringify(response))
-                console.log(response);
-                this.setState({
-                    isLoading: false,
-                });
-                this.getState();
-            })
-                .catch(function (error) {
-                //Alert.alert(JSON.stringify(error))
-                console.log(error);
-            });
+        })
+            .then(function (response) {
+            console.log(response);
+            //this.getState();
+        })
+            .catch(function (error) {
+            console.log(error);
         });
     }
     getState() {
-        const blocURL = `http://10.119.106.130/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
+        const blocURL = HOST_URL + `/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
         fetch(blocURL, {
             method: 'GET',
         })
@@ -91,7 +85,7 @@ export default class ContractDetail extends Component {
                 location: json.m_location,
                 uuid: json.m_uuid,
                 timestamp: json.m_timestamp,
-                isLoading: false,
+                isLoading: false
             });
         })
             .catch(function (error) {
@@ -102,8 +96,11 @@ export default class ContractDetail extends Component {
         let timestamp = new Date(this.state.timestamp * 1000).toString().slice(3, 25);
         return (React.createElement(View, { style: styles.view },
             React.createElement(Card, { containerStyle: styles.card },
-                React.createElement(Text, { style: styles.title }, this.state.location ? 'VERIFIED' : 'UNVERIFIED'),
-                React.createElement(Icon, { iconStyle: styles.icon, name: this.state.location ? 'check-circle' : 'info', size: 72, color: this.state.location ? 'green' : 'orange' }),
+                React.createElement(Text, { style: styles.title }, this.state.timestamp ? 'VERIFIED' : 'UNVERIFIED'),
+                this.state.isLoading ?
+                    React.createElement(View, { style: styles.loading },
+                        React.createElement(ActivityIndicator, { size: "large" })) :
+                    React.createElement(Icon, { iconStyle: styles.icon, name: this.state.timestamp ? 'check-circle' : 'info', size: 72, color: this.state.timestamp ? 'green' : 'orange' }),
                 React.createElement(Text, { style: styles.subtitle }, "UUID"),
                 React.createElement(Text, { style: styles.location, numberOfLines: 1 }, this.state.uuid ? this.state.uuid : 'UUID Unavailable'),
                 React.createElement(Text, { style: styles.subtitle }, "Current Location"),
@@ -123,20 +120,15 @@ export default class ContractDetail extends Component {
     }
 }
 ;
-// @ts-ignore
-function mapStateToProps(state) {
-    // @ts-ignore
-    return {};
-}
-// @ts-ignore
-function mapDispatchToProps(dispatch) {
-    return {};
-}
 const styles = StyleSheet.create({
     view: {
         padding: 10,
         flex: 1,
         alignItems: 'center',
+    },
+    loading: {
+        padding: 20,
+        alignSelf: 'center',
     },
     icon: {
         padding: 15,
@@ -170,7 +162,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         padding: 5,
         fontSize: 22,
-        color: 'blue',
     },
     hash: {
         alignSelf: 'center',

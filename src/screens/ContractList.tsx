@@ -3,6 +3,8 @@ import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-nativ
 import { ListItem, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+const HOST_URL = 'http://192.168.1.167';
+
 
 interface IProps {
     navigation: any,
@@ -43,7 +45,7 @@ export default class ContractList extends Component<IProps, IState> {
   }
 
   async faucet() {
-    await fetch('http://10.119.106.130/strato-api/eth/v1.2/faucet', {
+    await fetch(HOST_URL + '/strato-api/eth/v1.2/faucet', {
       method: 'POST',
       body: `address=${this.state.address}`,
       headers: {
@@ -67,7 +69,7 @@ export default class ContractList extends Component<IProps, IState> {
     }
       console.log('getting contract list...');
 
-      const blocURL = 'http://10.119.106.130/bloc/v2.2/contracts/';
+      const blocURL = HOST_URL + '/bloc/v2.2/contracts/';
       await fetch(blocURL, {
         method: 'GET',
         headers: {
@@ -80,9 +82,8 @@ export default class ContractList extends Component<IProps, IState> {
         console.log(json);
         this.setState({
           data: json.SupplyChain,
-          timestamp: json.SupplyChain.createdAt,
+          timestamp: new Date(json.SupplyChain.createdAt * 1000).toString().slice(3, 25),
         });
-        this.setState({timestamp: new Date(this.state.timestamp * 1000).toString()});
         console.log('got contracts!', this.state.data)
       })
       .catch(function (error) {
@@ -103,14 +104,15 @@ export default class ContractList extends Component<IProps, IState> {
       onPress={() => this.onTouchContract(item)}
       containerStyle={styles.contractListItem}      
       rightIcon={{name: 'chevron-right', color: "rgba(51, 51, 51, 0.8)"}}
-      title={item.address}  
+      title={
+        <Text numberOfLines={1} ellipsizeMode={'head'} style={styles.addressText}>{item.address}</Text>  
+      }
       // badge={{ value: 3, textStyle: { color: 'white' }, containerStyle: { marginTop: -20 } }}
       subtitle={
         <View style={styles.subtitleView}>
-          <Text style={styles.ratingText}>Last Updated: {item.createdAt}</Text>
+          <Text style={styles.ratingText}>Last Updated: {new Date(item.createdAt * 1000).toString().slice(3, 15)}</Text>
         </View>
       }
-
     />
   );
 
@@ -134,7 +136,7 @@ export default class ContractList extends Component<IProps, IState> {
         <FlatList
          data={this.state.data}
          renderItem={this.renderItem}
-         keyExtractor={item => item.id}
+         keyExtractor={item => item.address}
          refreshing={this.state.isLoading}
          onRefresh={() => this.getContracts()}
         />
@@ -183,9 +185,12 @@ const styles = StyleSheet.create({
   subtitleView: {
 
   },
-  ratingText: {
-    paddingTop: 5,
+  addressText:{
 
+  },
+  ratingText: {
+    color: 'gray',
+    paddingTop: 5,
   },
   buttonSignup: {
     alignSelf: 'center',
@@ -200,6 +205,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignSelf: 'center',
     bottom: 10,
-
   },
 });

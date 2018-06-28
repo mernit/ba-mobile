@@ -8,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import React, { Component } from 'react';
 import { Button, View, StyleSheet, Text } from 'react-native';
-import { connect } from 'react-redux';
 export class Confirmation extends Component {
     constructor(props) {
         super(props);
@@ -85,16 +84,6 @@ export class Confirmation extends Component {
     }
 }
 ;
-// @ts-ignore
-function mapStateToProps(state) {
-    // @ts-ignore
-    return {};
-}
-// @ts-ignore
-function mapDispatchToProps(dispatch) {
-    return {};
-}
-export default connect(mapStateToProps, mapDispatchToProps)(Confirmation);
 // const styles = StyleSheet.create({
 //   mainView: {
 //     flex: 1

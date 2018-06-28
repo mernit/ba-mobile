@@ -4,16 +4,16 @@ import { View, StyleSheet, Text, AsyncStorage, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button, Card } from 'react-native-elements';
 
-import IStoreState from '../store/IStoreState';
-import { connect, Dispatch } from 'react-redux';
-
-
 // @ts-ignore
 import { bindActionCreators } from 'redux';
 
 // import { UsernameChangedActionCreator } from '../actions/AuthActions';
 
 import Toast from 'react-native-easy-toast';
+
+//import Config from 'react-native-config'
+
+const HOST_URL = 'http://192.168.1.167';
 
 interface IProps {
   navigation: any;
@@ -29,7 +29,7 @@ interface IState {
   faucetSuccess: boolean
 }
 
-export class Signup extends Component<IProps, IState> {
+export default class Signup extends Component<IProps, IState> {
 
   constructor(props: IProps){
     super(props);
@@ -66,9 +66,10 @@ export class Signup extends Component<IProps, IState> {
     // }
 
     createUser(){
+      console.log('got config url', HOST_URL);
       this.setState({createButtonDisabled: true, isLoading: true});
       let password = this.state.password;
-      fetch('http://10.119.106.130/bloc/v2.2/users/' + this.state.username, {
+      fetch(HOST_URL + '/bloc/v2.2/users/' + this.state.username, {
         method: 'POST',
         body: JSON.stringify(password),
         headers: {
@@ -237,22 +238,6 @@ export class Signup extends Component<IProps, IState> {
     )
   }
 };
-
- // @ts-ignore
-function mapStateToProps(state: IStoreState): IProps {
-  // @ts-ignore
-  return {
-  };
-}
-
-
-// @ts-ignore
-function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
-  return {
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Signup);
 
 // define styles
 const styles = StyleSheet.create({
