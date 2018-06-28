@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { ListItem, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-const HOST_URL = 'http://192.168.1.167';
+const HOST_URL = 'http://10.119.109.205';
 export default class ContractList extends Component {
     constructor(props) {
         super(props);

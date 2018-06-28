@@ -3,7 +3,7 @@ import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-nativ
 import { ListItem, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const HOST_URL = 'http://192.168.1.167';
+const HOST_URL = 'http://10.119.109.205';
 
 
 interface IProps {

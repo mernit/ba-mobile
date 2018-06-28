@@ -13,7 +13,7 @@ import { Input, Button, Card } from 'react-native-elements';
 // import { UsernameChangedActionCreator } from '../actions/AuthActions';
 import Toast from 'react-native-easy-toast';
 //import Config from 'react-native-config'
-const HOST_URL = 'http://192.168.1.167';
+const HOST_URL = 'http://10.119.109.205';
 export default class Signup extends Component {
     constructor(props) {
         super(props);

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { NavigationActions } from 'react-navigation';
-const HOST_URL = 'http://192.168.1.167';
+const HOST_URL = 'http://10.119.109.205';
 export default class SideBar extends Component {
     constructor(props) {
         super(props);
@@ -22,9 +22,9 @@ export default class SideBar extends Component {
         this.resetAction = NavigationActions.replace({ routeName: 'Map' });
         this.navigateToScreen = this.navigateToScreen.bind(this);
         this.resetNavigation = this.resetNavigation.bind(this);
-        this.componentDidMount = this.componentDidMount.bind(this);
+        this.componentWillMount = this.componentWillMount.bind(this);
     }
-    componentDidMount() {
+    componentWillMount() {
         fetch(HOST_URL + '/apex-api/status', {
             method: 'GET',
             headers: {

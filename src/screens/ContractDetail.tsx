@@ -3,18 +3,15 @@ import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
 
 // ********* START HANDY ASYNC CODE ********* //
-
     // return AsyncStorage.getItem(`${this.state.username}`)
     // .then(req => JSON.parse(req))
     // .then(json => this.setState({username: json}))
     // console.log('got json back from async storage', this.state.username);
     //console.log('user saved in storage', AsyncStorage.getItem(`${this.state.username}`));
-
     //const username = await AsyncStorage.getItem(`${this.state.address}`)
-
 // ********* END HAND ASYNC CODE ********* //
 
-const HOST_URL = 'http://192.168.1.167';
+const HOST_URL = 'http://10.119.109.205';
 
 interface IProps {
     navigation: any,
@@ -43,7 +40,7 @@ export default class ContractDetail extends Component<IProps, IState> {
 
     this.state = {
         password: this.props.navigation.getParam('password'),
-        isLoading: false,
+        isLoading: true,
         address: this.props.navigation.getParam('address'),
         userAddress: this.props.navigation.getParam('userAddress'),
         contractName: '',
@@ -64,7 +61,6 @@ export default class ContractDetail extends Component<IProps, IState> {
 
     componentWillMount() {
         this.callContract();
-        this.setState({isLoading: true});
     }
 
     componentDidMount() {
@@ -74,8 +70,8 @@ export default class ContractDetail extends Component<IProps, IState> {
     callContract() {
       //Alert.alert(JSON.stringify('calling contract...'))
       const blocURL = HOST_URL + '/bloc/v2.2/users/';
-      const username = this.state.username ? this.state.username : 'Mernit';
-      const password = this.state.password ? this.state.password : '1234';
+      const username = this.state.username;
+      const password = this.state.password;
       const methodName = 'scanItem';
       const address = this.state.address;
       const userAddress = this.state.userAddress;
@@ -121,11 +117,12 @@ export default class ContractDetail extends Component<IProps, IState> {
         });
       })
       .catch(function (error) {
-        throw error;
+        console.log('error', error);
       });
     }
 
     render() {
+
       let timestamp = new Date(this.state.timestamp * 1000).toString().slice(3, 25);
 
       return (
@@ -269,5 +266,3 @@ export default class ContractDetail extends Component<IProps, IState> {
     
   
   });
-  
-  

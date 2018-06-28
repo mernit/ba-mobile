@@ -9,13 +9,13 @@ import { Icon, Button, Card } from 'react-native-elements';
 //console.log('user saved in storage', AsyncStorage.getItem(`${this.state.username}`));
 //const username = await AsyncStorage.getItem(`${this.state.address}`)
 // ********* END HAND ASYNC CODE ********* //
-const HOST_URL = 'http://192.168.1.167';
+const HOST_URL = 'http://10.119.109.205';
 export default class ContractDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
             password: this.props.navigation.getParam('password'),
-            isLoading: false,
+            isLoading: true,
             address: this.props.navigation.getParam('address'),
             userAddress: this.props.navigation.getParam('userAddress'),
             contractName: '',
@@ -35,7 +35,6 @@ export default class ContractDetail extends Component {
     }
     componentWillMount() {
         this.callContract();
-        this.setState({ isLoading: true });
     }
     componentDidMount() {
         this.getState();
@@ -43,8 +42,8 @@ export default class ContractDetail extends Component {
     callContract() {
         //Alert.alert(JSON.stringify('calling contract...'))
         const blocURL = HOST_URL + '/bloc/v2.2/users/';
-        const username = this.state.username ? this.state.username : 'Mernit';
-        const password = this.state.password ? this.state.password : '1234';
+        const username = this.state.username;
+        const password = this.state.password;
         const methodName = 'scanItem';
         const address = this.state.address;
         const userAddress = this.state.userAddress;
@@ -89,7 +88,7 @@ export default class ContractDetail extends Component {
             });
         })
             .catch(function (error) {
-            throw error;
+            console.log('error', error);
         });
     }
     render() {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
 
-const HOST_URL = 'http://192.168.1.167';
+const HOST_URL = 'http://10.119.109.205';
 
 interface IProps {
     navigation: any,
@@ -45,7 +45,7 @@ export default class Confirmation extends Component<IProps, IState> {
         value: '',
         method: '',
         args: '',
-        location: '',
+        location: this.props.navigation.getParam('location'),
         timestamp: '',
         response: [],
         currentLocation: '',
@@ -120,7 +120,7 @@ getState() {
   .then(json => {
     console.log(json);
     this.setState({
-      location: json.itemIndex[0].location,
+      //location: json.itemIndex[0].location,
       currentLocation: json.itemIndex.slice(-1)[0].location,
       timestamp: json.itemIndex[0].timestamp,
     });
@@ -147,8 +147,8 @@ getState() {
               />
             <Text numberOfLines={2} ellipsizeMode={'tail'} style={styles.subtitle}>Transaction Hash</Text>
             <Text style={styles.location}>{this.state.hash ? this.state.hash : 'Hash Unavailable'}</Text>
-            <Text numberOfLines={2} style={styles.subtitle}>Origin Location</Text>
-            <Text style={styles.location}>{this.state.location ? this.state.location : 'Location Unavailable'}</Text>
+            {/* <Text numberOfLines={2} style={styles.subtitle}>Origin Location</Text>
+            <Text style={styles.location}>{this.state.location ? this.state.location : 'Location Unavailable'}</Text> */}
               </Card>
                 <Button 
                   icon={
