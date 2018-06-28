@@ -20,7 +20,7 @@ interface IState {
     args: string,
     uuid: string,
     location: string,
-    timestamp: string,
+    timestamp: any,
     response: any,
     stateResponse: Array<any>,
     currentLocation: any,
@@ -71,7 +71,7 @@ export default class Contract extends Component<IProps, IState> {
   // CALL CONTRACT 
 
   callContract() {
-    const blocURL = 'http://localhost/bloc/v2.2/users/';
+    const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
     const username = 'Zabar';
     const password = "1234";
     const methodName = 'scanItem';
@@ -109,7 +109,7 @@ export default class Contract extends Component<IProps, IState> {
 }
 
 getState() {
-  const blocURL = `http://localhost/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
+  const blocURL = `http://10.119.106.130/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
   fetch(blocURL, {
     method: 'GET',
   })
@@ -132,6 +132,8 @@ getState() {
   // END CALL CONTRACT
 
     render() {
+      let timestamp = new Date(this.state.timestamp * 1000).toString().slice(3, 25);
+      console.log('timestamp', timestamp);
       return (
         <View style={styles.view}>
           <Card containerStyle={styles.card}>       
@@ -145,11 +147,11 @@ getState() {
               color={this.state.timestamp ? 'green' : 'orange'}
               />
             <Text style={styles.subtitle}>UUID</Text>
-            <Text style={styles.location}>{this.state.uuid ? this.state.uuid : 'UUID Unavailable'}</Text>
+            <Text style={styles.location} numberOfLines={1}>{this.state.uuid ? this.state.uuid : 'UUID Unavailable'}</Text>
             <Text style={styles.subtitle}>Current Location</Text>
-            <Text style={this.state.location ? styles.currentLocation : styles.location}>{this.state.location ? this.state.location : 'Location Unavailable'}</Text>
+            <Text style={this.state.location ? styles.currentLocation : styles.location} numberOfLines={1}>{this.state.location ? this.state.location : 'Location Unavailable'}</Text>
             <Text style={styles.subtitle}>Timestamp</Text>
-            <Text style={styles.hash}>{this.state.timestamp ? this.state.timestamp : 'Timestamp Unavailable'}</Text>
+            <Text style={styles.hash} numberOfLines={1}>{this.state.timestamp ? timestamp : 'Timestamp Unavailable'}</Text>
               </Card>
                 <Button 
                   icon={
@@ -160,8 +162,8 @@ getState() {
                     />
                   }
                     containerStyle={styles.buttonSignup}
-                    onPress={() => { this.props.navigation.navigate('Camera', {address: this.state.address, userAddress: this.state.userAddress}) } }
-                    title='CHECK-IN'
+                    onPress={() => { this.props.navigation.navigate('Camera', {username: this.state.username, password: this.state.password, address: this.state.address, userAddress: this.state.userAddress}) } }
+                    title='Check-In'
                 />
   
               </View>
@@ -191,7 +193,6 @@ getState() {
       padding:10,
       flex: 1,
       alignItems: 'center',
-      backgroundColor: '#ffffff'
     },
     icon: {
       padding: 15,
@@ -206,6 +207,7 @@ getState() {
       borderColor: 'rgba(53,53,53,0.1)',
     },
     title: {
+      marginTop: 20,
       alignSelf: 'center',
       fontSize: 36,
       padding: 15,
@@ -217,7 +219,7 @@ getState() {
     },
     location: {
       alignSelf: 'center',
-      padding: 5,
+      padding: 15,
       fontSize: 22,
     },
     currentLocation: {
@@ -225,7 +227,6 @@ getState() {
       padding: 5,
       fontSize: 22,
       color: 'black',
-
     },
     hash: {
       alignSelf: 'center',

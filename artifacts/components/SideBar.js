@@ -25,7 +25,7 @@ export class SideBar extends Component {
         this.componentDidMount = this.componentDidMount.bind(this);
     }
     componentDidMount() {
-        fetch('http://localhost/apex-api/status', {
+        fetch('http://10.119.106.130/apex-api/status', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -65,16 +65,24 @@ export class SideBar extends Component {
             , { 
                 // roundAvatar
                 // avatar={{uri:l.avatar_url}}
-                containerStyle: styles.navItem, key: 'Contracts', title: 'Products', leftIcon: { name: 'reorder', color: "rgba(51, 51, 51, 0.8)" }, onPress: () => {
+                containerStyle: styles.navItem, key: 'Signup', title: 'Account', leftIcon: { name: 'person', color: "rgba(51, 51, 51, 0.8)" }, onPress: () => {
+                    this.resetNavigation('Signup');
+                } }),
+            React.createElement(ListItem
+            // roundAvatar
+            // avatar={{uri:l.avatar_url}}
+            , { 
+                // roundAvatar
+                // avatar={{uri:l.avatar_url}}
+                containerStyle: styles.navItem, key: 'Contracts', title: 'Packages', leftIcon: { name: 'reorder', color: "rgba(51, 51, 51, 0.8)" }, onPress: () => {
                     this.resetNavigation('ContractList');
                 } }),
-            React.createElement(ListItem, { containerStyle: styles.navItem, key: 'ContractBuilder', title: 'Add Product', leftIcon: { name: 'open-in-new', color: "rgba(51, 51, 51, 0.8)" }, onPress: () => {
+            React.createElement(ListItem, { containerStyle: styles.navItem, key: 'ContractBuilder', title: 'Add Package', leftIcon: { name: 'open-in-new', color: "rgba(51, 51, 51, 0.8)" }, onPress: () => {
                     this.resetNavigation('ContractBuilder');
                 } }),
-            React.createElement(ListItem, { containerStyle: styles.navItem, key: 'ContractDetail', title: 'Check-In', leftIcon: { name: 'cached', color: "rgba(51, 51, 51, 0.8)" }, onPress: () => {
-                    this.resetNavigation('Camera');
-                } }),
-            React.createElement(ListItem, { title: 'Node Status', titleStyle: styles.title, containerStyle: styles.navStatusItem, onPress: () => {
+            React.createElement(ListItem, { title: 'Node Status', 
+                //titleStyle={styles.title}
+                containerStyle: styles.navStatusItem, onPress: () => {
                     this.state.isVisible ?
                         this.setState({ isVisible: false }) :
                         this.setState({ isVisible: true });

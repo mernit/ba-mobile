@@ -60,7 +60,7 @@ export default class ContractItem extends Component {
     }
     // CALL CONTRACT 
     callContract() {
-        const blocURL = 'http://localhost/bloc/v2.2/users/';
+        const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
         const username = 'Zabar';
         const password = "1234";
         const methodName = 'scanItem';
@@ -98,7 +98,7 @@ export default class ContractItem extends Component {
     }
     // TODO: FIGURE OUT WHY 405 IS RETURNED 
     getState() {
-        const blocURL = 'http://localhost/bloc/v2.2/contracts/SupplyChain/b823216ffb44fcea8eb4e2a53d7275eee8435aef/state?name=itemIndex';
+        const blocURL = 'http://10.119.106.130/bloc/v2.2/contracts/SupplyChain/b823216ffb44fcea8eb4e2a53d7275eee8435aef/state?name=itemIndex';
         fetch(blocURL, {
             method: 'GET',
             headers: {

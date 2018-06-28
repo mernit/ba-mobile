@@ -39,7 +39,7 @@ export default class Contract extends Component {
     }
     // CALL CONTRACT 
     callContract() {
-        const blocURL = 'http://localhost/bloc/v2.2/users/';
+        const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
         const username = 'Zabar';
         const password = "1234";
         const methodName = 'scanItem';
@@ -75,7 +75,7 @@ export default class Contract extends Component {
         });
     }
     getState() {
-        const blocURL = `http://localhost/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
+        const blocURL = `http://10.119.106.130/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
         fetch(blocURL, {
             method: 'GET',
         })
@@ -96,17 +96,19 @@ export default class Contract extends Component {
     }
     // END CALL CONTRACT
     render() {
+        let timestamp = new Date(this.state.timestamp * 1000).toString().slice(3, 25);
+        console.log('timestamp', timestamp);
         return (React.createElement(View, { style: styles.view },
             React.createElement(Card, { containerStyle: styles.card },
                 React.createElement(Text, { style: styles.title }, this.state.timestamp ? 'VERIFIED' : 'UNVERIFIED'),
                 React.createElement(Icon, { iconStyle: styles.icon, name: this.state.timestamp ? 'check-circle' : 'info', size: 72, color: this.state.timestamp ? 'green' : 'orange' }),
                 React.createElement(Text, { style: styles.subtitle }, "UUID"),
-                React.createElement(Text, { style: styles.location }, this.state.uuid ? this.state.uuid : 'UUID Unavailable'),
+                React.createElement(Text, { style: styles.location, numberOfLines: 1 }, this.state.uuid ? this.state.uuid : 'UUID Unavailable'),
                 React.createElement(Text, { style: styles.subtitle }, "Current Location"),
-                React.createElement(Text, { style: this.state.location ? styles.currentLocation : styles.location }, this.state.location ? this.state.location : 'Location Unavailable'),
+                React.createElement(Text, { style: this.state.location ? styles.currentLocation : styles.location, numberOfLines: 1 }, this.state.location ? this.state.location : 'Location Unavailable'),
                 React.createElement(Text, { style: styles.subtitle }, "Timestamp"),
-                React.createElement(Text, { style: styles.hash }, this.state.timestamp ? this.state.timestamp : 'Timestamp Unavailable')),
-            React.createElement(Button, { icon: React.createElement(Icon, { name: 'link', size: 25, color: 'white' }), containerStyle: styles.buttonSignup, onPress: () => { this.props.navigation.navigate('Camera', { address: this.state.address, userAddress: this.state.userAddress }); }, title: 'CHECK-IN' })));
+                React.createElement(Text, { style: styles.hash, numberOfLines: 1 }, this.state.timestamp ? timestamp : 'Timestamp Unavailable')),
+            React.createElement(Button, { icon: React.createElement(Icon, { name: 'link', size: 25, color: 'white' }), containerStyle: styles.buttonSignup, onPress: () => { this.props.navigation.navigate('Camera', { username: this.state.username, password: this.state.password, address: this.state.address, userAddress: this.state.userAddress }); }, title: 'Check-In' })));
     }
 }
 ;
@@ -124,7 +126,6 @@ const styles = StyleSheet.create({
         padding: 10,
         flex: 1,
         alignItems: 'center',
-        backgroundColor: '#ffffff'
     },
     icon: {
         padding: 15,
@@ -139,6 +140,7 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(53,53,53,0.1)',
     },
     title: {
+        marginTop: 20,
         alignSelf: 'center',
         fontSize: 36,
         padding: 15,
@@ -150,7 +152,7 @@ const styles = StyleSheet.create({
     },
     location: {
         alignSelf: 'center',
-        padding: 5,
+        padding: 15,
         fontSize: 22,
     },
     currentLocation: {

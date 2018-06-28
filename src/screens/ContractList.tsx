@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList, StyleSheet, Text, ActivityIndicator, AsyncStorage } from 'react-native';
+import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { ListItem, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -11,16 +11,20 @@ interface IProps {
 interface IState {
   data: Array<any>,
   isLoading: boolean,
-  address: '',
+  address: string,
   faucetAccount: boolean,
-  username: '',
+  username: string,
+  password: string
+  timestamp: any,
 }
 
 export default class ContractList extends Component<IProps, IState> {
   constructor(props: IProps){
     super(props);
     this.state = {
-      username: '',
+      username: this.props.navigation.getParam('username'),
+      password: this.props.navigation.getParam('password'),
+      timestamp: '',
       isLoading: false,
       address: this.props.navigation.getParam('address'),
       data: [],
@@ -39,7 +43,7 @@ export default class ContractList extends Component<IProps, IState> {
   }
 
   async faucet() {
-    await fetch('http://localhost/strato-api/eth/v1.2/faucet', {
+    await fetch('http://10.119.106.130/strato-api/eth/v1.2/faucet', {
       method: 'POST',
       body: `address=${this.state.address}`,
       headers: {
@@ -63,7 +67,7 @@ export default class ContractList extends Component<IProps, IState> {
     }
       console.log('getting contract list...');
 
-      const blocURL = 'http://localhost/bloc/v2.2/contracts/';
+      const blocURL = 'http://10.119.106.130/bloc/v2.2/contracts/';
       await fetch(blocURL, {
         method: 'GET',
         headers: {
@@ -76,7 +80,9 @@ export default class ContractList extends Component<IProps, IState> {
         console.log(json);
         this.setState({
           data: json.SupplyChain,
+          timestamp: json.SupplyChain.createdAt,
         });
+        this.setState({timestamp: new Date(this.state.timestamp * 1000).toString()});
         console.log('got contracts!', this.state.data)
       })
       .catch(function (error) {
@@ -88,8 +94,9 @@ export default class ContractList extends Component<IProps, IState> {
   onTouchContract(contract: any) {
     let address = contract.address;
     console.log('got address', address)
-    this.props.navigation.navigate('Contract', {address: address, userAddress: this.state.address});
+    this.props.navigation.navigate('Contract', {username: this.state.username, password: this.state.password, address: address, userAddress: this.state.address});
   }
+
 
   renderItem = ({item}) => (
     <ListItem 
@@ -108,6 +115,7 @@ export default class ContractList extends Component<IProps, IState> {
   );
 
   render() {
+    //let timestamp = new Date(this.state.timestamp * 1000).toString();
     console.log(this.state.data)
     return (
       <View style={styles.view}>
@@ -131,6 +139,7 @@ export default class ContractList extends Component<IProps, IState> {
          onRefresh={() => this.getContracts()}
         />
 
+        <View style={styles.buttonContainer}>
           <Button containerStyle={styles.buttonSignup}
             icon={
               <Icon
@@ -140,8 +149,9 @@ export default class ContractList extends Component<IProps, IState> {
               />
             }
             onPress={() => { this.props.navigation.navigate('ContractBuilder') } }
-            title='ADD NEW PACKAGE'
+            title='Add Package'
         />
+        </View>
 
      </View>
     )
@@ -150,7 +160,7 @@ export default class ContractList extends Component<IProps, IState> {
 
 const styles = StyleSheet.create({
   view: {
-    height: '100%',
+    height: '90%',
   },
   contractListItem:{
     paddingTop: 20,
@@ -179,9 +189,17 @@ const styles = StyleSheet.create({
   },
   buttonSignup: {
     alignSelf: 'center',
-    position: 'relative',
-    marginBottom: 30,
-    width: 300,
-    height: 45,
+    position: 'absolute',
+    top: 60,
+    padding: 15,
+    width: 400,
+    height: 75,
+  },
+  buttonContainer: {
+    height: 50,
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 10,
+
   },
 });

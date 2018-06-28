@@ -5,6 +5,7 @@ import { connect, Dispatch } from 'react-redux';
 import {ListItem} from 'react-native-elements';
 import {NavigationActions} from 'react-navigation';
 
+
 interface IProps {
     navigation?: any,
     loggedIn: boolean
@@ -39,7 +40,7 @@ export class SideBar extends Component<IProps, IState> {
     }
 
     componentDidMount() {
-        fetch('http://localhost/apex-api/status', {
+        fetch('http://10.119.106.130/apex-api/status', {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -84,25 +85,25 @@ export class SideBar extends Component<IProps, IState> {
          return (
         <View style={styles.view}>
 
-                {/* <ListItem
+                <ListItem
                   // roundAvatar
                   // avatar={{uri:l.avatar_url}}
                   containerStyle={styles.navItem}
-                  key='Login'
-                  title='Products'
-                  leftIcon={{name: 'flight-takeoff', color: "rgba(51, 51, 51, 0.8)"}}
+                  key='Signup'
+                  title='Account'
+                  leftIcon={{name: 'person', color: "rgba(51, 51, 51, 0.8)"}}
 
                   onPress={ () => {
-                    this.resetNavigation('ContractList');
+                    this.resetNavigation('Signup');
                   }} 
-                /> */}
+                />
 
                 <ListItem
                   // roundAvatar
                   // avatar={{uri:l.avatar_url}}
                   containerStyle={styles.navItem}
                   key='Contracts'
-                  title='Products'
+                  title='Packages'
                   leftIcon={{name: 'reorder', color: "rgba(51, 51, 51, 0.8)"}}
 
                   onPress={ () => {
@@ -124,7 +125,7 @@ export class SideBar extends Component<IProps, IState> {
                  <ListItem
                   containerStyle={styles.navItem}
                   key='ContractBuilder'
-                  title='Add Product'
+                  title='Add Package'
                   leftIcon={{name: 'open-in-new', color: "rgba(51, 51, 51, 0.8)"}}
 
                   onPress={ () => {
@@ -133,19 +134,8 @@ export class SideBar extends Component<IProps, IState> {
                 />
 
                 <ListItem
-                  containerStyle={styles.navItem}
-                  key='ContractDetail'
-                  title='Check-In'
-                  leftIcon={{name: 'cached', color: "rgba(51, 51, 51, 0.8)"}}
-
-                  onPress={ () => {
-                    this.resetNavigation('Camera');
-                  }} 
-                />
-
-                <ListItem
                   title='Node Status'
-                  titleStyle={styles.title}
+                  //titleStyle={styles.title}
                   containerStyle={styles.navStatusItem}
                   onPress={()=>{
                     this.state.isVisible ?

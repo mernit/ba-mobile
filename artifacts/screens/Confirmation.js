@@ -37,7 +37,7 @@ export default class Confirmation extends Component {
     }
     // CALL CONTRACT 
     callContract() {
-        const blocURL = 'http://tdlwv3y2cp.eastus2.cloudapp.azure.com/bloc/v2.2/users/';
+        const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
         const username = 'Zabar';
         const password = "1234";
         const methodName = 'scanItem';
@@ -73,7 +73,7 @@ export default class Confirmation extends Component {
         });
     }
     getState() {
-        const blocURL = `http://localhost/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
+        const blocURL = `http://10.119.106.130/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state?name=itemIndex`;
         fetch(blocURL, {
             method: 'GET',
         })

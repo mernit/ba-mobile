@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, AsyncStorage } from 'react-native';
+import { View, StyleSheet, Text, AsyncStorage, Image } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button, Card } from 'react-native-elements';
@@ -46,17 +46,33 @@ export class Signup extends Component<IProps, IState> {
 
     this.createUser = this.createUser.bind(this);
     this.validateSignup = this.validateSignup.bind(this);
+    // this.test = this.test.bind(this);
     // this.faucet = this.faucet.bind(this);
   }
+
+    // test() {
+    //   fetch('https://mlbrfh44gb.execute-api.us-east-1.amazonaws.com/staging/getVisitedNodes', {
+    //     method: 'GET',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     }
+    //   })
+    //   .then(function(response) {
+    //     console.log('response', response.json);
+    //   })
+    //   .catch(function(error) {
+    //     console.log('error', error);
+    //   })
+    // }
 
     createUser(){
       this.setState({createButtonDisabled: true, isLoading: true});
       let password = this.state.password;
-      fetch('http://localhost/bloc/v2.2/users/' + this.state.username, {
+      fetch('http://10.119.106.130/bloc/v2.2/users/' + this.state.username, {
         method: 'POST',
         body: JSON.stringify(password),
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
       })
       .then(response => response.json())
@@ -69,7 +85,7 @@ export class Signup extends Component<IProps, IState> {
         AsyncStorage.setItem(`${this.state.username}`, JSON.stringify(this.state.address));
         console.log('stored username', AsyncStorage.getItem(`${this.state.username}`));
         console.log('stored address', AsyncStorage.getItem(`${this.state.address}`));
-        this.props.navigation.navigate('ContractList', {address: this.state.address, faucetAccount: true})
+        this.props.navigation.navigate('ContractList', {username: this.state.username, password: this.state.password, address: this.state.address, faucetAccount: true})
         //this.faucet()
       })
       .catch(function (error) {
@@ -141,7 +157,10 @@ export class Signup extends Component<IProps, IState> {
   render() {
     return (
       <View style={styles.view}>
-       <Text style={styles.header}>Create Account </Text>
+        <Image style={styles.image}
+        source={require('/Users/beta9/ba-mobile/src/screens/ba.png')}
+        />
+       <Text style={styles.header}>BlockApps STRATO</Text>
         <Card containerStyle={styles.loginCard}>
           <Input
             placeholder='Username'
@@ -238,6 +257,12 @@ export default connect(mapStateToProps, mapDispatchToProps)(Signup);
 // define styles
 const styles = StyleSheet.create({
   loginCard: {
+    //backgroundColor: 'pink'
+  },
+  image: {
+    paddingTop: 40,
+    width: 130,
+    height: 150,
   },
   loading: {
     alignSelf: 'center',
@@ -245,40 +270,32 @@ const styles = StyleSheet.create({
     height: 50,
   },
   header:{
+    padding: 30,
     fontSize: 22
   },
   view: {
-    padding: 30,
+    padding: 50,
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#ffffff'
+    //backgroundColor: 'pink'
   },
-
   button: {
-    backgroundColor: "rgba(92, 99,216, 1)",
     width: 300,
     height: 45,
-    borderColor: "transparent",
-    borderWidth: 0,
-    borderRadius: 5
   },
-
   inputPadding:{
     marginTop: 20,
     marginLeft: 15
   },
-
   containerPadding: {
     borderColor:'#333333',
     borderTopWidth: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,
     borderBottomWidth: 1,
-    borderRadius: 5,
+    borderRadius: 20,
     padding: 5,
 
   }
-
-  
 
 });

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, AsyncStorage } from 'react-native';
-import { Input, Button } from 'react-native-elements';
+import { Input, Button, Card } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Toast from 'react-native-easy-toast';// import * as HttpStatus from 'http-status-codes';
-
+import Geocoder from 'react-native-geocoder';
 // import Logger from '../services/Logger';
 
 import IStoreState from '../store/IStoreState';
@@ -27,7 +27,12 @@ interface IState {
     status: string,
     contractEscrow: string,
     contractMultiSig: string,
-}
+    region: any,
+    lat: any,
+    lng: any,
+    error: any,
+    userLocation: Array<any>
+  }
 
 export class Confirmation extends Component<IProps, IState> {
   constructor(props: IProps){
@@ -42,28 +47,49 @@ export class Confirmation extends Component<IProps, IState> {
         contractEscrow: '',
         contractMultiSig: '',
         hash: '',
+        region: '',
         status: '',
         username: this.props.navigation.getParam('username'),
         password: this.props.navigation.getParam('password'),
+        lat: null,
+        lng: null,
+        error: null,
+        userLocation: [],
     }
 
     this.componentDidMount = this.componentDidMount.bind(this);
     this.compileContract = this.compileContract.bind(this);
+    this.getUserLocation = this.getUserLocation.bind(this);
     this.createEscrowContract = this.createEscrowContract.bind(this);
     //this.createMultiSigContract = this.createMultiSigContract.bind(this);
     }
 
     componentDidMount() {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.setState({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+          });
+          console.log(this.state.lat, this.state.lng);
+          this.getUserLocation();
+        });
+      };
+
       //let address = AsyncStorage.getItem('address');
       //console.log('got address from storage', address)
+
+  
+    async getUserLocation() {
+      const position = {lat: this.state.lat, lng: this.state.lng}
+      console.log('got position', position)
+      const response = await Geocoder.geocodePosition(position);
+      console.log('got response from geocoder', response[0].locality)
+      this.setState({location: response[0].locality})
     }
 
-    createMultiSigContract() {
-      this.setState({contractSource: 'contract source for multisig'})
-    }
-
-    createEscrowContract() { // user can select contract from drop down options
-      //this.compileContract();
+    createEscrowContract() { 
+      // TODO: user can select contract from drop down options
       this.compileContract();
     }
 
@@ -128,12 +154,14 @@ export class Confirmation extends Component<IProps, IState> {
       //     return storedData;
       //   }
       // }`;
-      const blocURL = 'http://localhost/bloc/v2.2/users/';
+      const blocURL = 'http://10.119.106.130/bloc/v2.2/users/';
       const username = this.state.username;
       const password = this.state.password;
+      const uuid = Math.random().toString().slice(2,11);
+      console.log('uuid', uuid)
       //const location = this.state.location;
       const args = {
-        uuid: '12345',
+        uuid: uuid,
         location: this.state.location
       }
       const RequestBody = { password, src, args }
@@ -169,10 +197,12 @@ export class Confirmation extends Component<IProps, IState> {
     render() {
       return (
         <View style={styles.view}>
-
-
           <View style={styles.loginCard}> 
-            <Text style={styles.header}> Add Product </Text>
+
+            <Text style={styles.header}> Add Package </Text>
+            
+            <Card containerStyle={styles.loginCard}>
+
             <Input
                 placeholder='Username'
                 leftIcon={
@@ -193,14 +223,14 @@ export class Confirmation extends Component<IProps, IState> {
                 placeholder='Origin Location'
                 leftIcon={
                   <Icon
-                    name='info'
+                    name='map-pin'
                     size={20}
                     color='#333333'
                   />
                 }
     
                 containerStyle={styles.inputPadding}
-                onChangeText={(location) => this.setState({location})}
+                //onChangeText={(location) => this.setState({location})}
                 value={this.state.location}
                 />
 
@@ -219,9 +249,8 @@ export class Confirmation extends Component<IProps, IState> {
               onChangeText={(password) => this.setState({password})}
               value={this.state.password}
               />
-              </View>
   
-              <View>
+
             <Button containerStyle={styles.buttonSignup}
               icon={
                 <Icon
@@ -231,7 +260,7 @@ export class Confirmation extends Component<IProps, IState> {
                 />
                 }
                 onPress={this.createEscrowContract}
-                title='DEPLOY CONTRACT'
+                title='Deploy Contract'
                 loading={this.state.isLoading}
                 disabled={this.state.isLoading}
                 loadingStyle={styles.loading}
@@ -246,7 +275,7 @@ export class Confirmation extends Component<IProps, IState> {
                   opacity={0.8}
                   textStyle={{color:'white'}}
               />
-  
+              </Card>
               </View>
               {/* <View style={styles.signupCard}> 
               
@@ -297,30 +326,30 @@ export class Confirmation extends Component<IProps, IState> {
       height: 50,
     },
     view: {
-      padding:10,
-      height: '100%',
+      padding:20,
       flex: 1,
       alignItems: 'center',
-      backgroundColor: '#ffffff'
     },
     loginCard: {
-      flex: 6,
-      alignSelf: 'stretch',
+      flex: 1,
+      alignSelf: 'center',
+      width: '100%',
+      marginBottom: 90,
     },
     signupCard: {
       flex: 1,
     },
     header:{
-      padding: 15,
-      marginTop: 12,
+      padding: 50,
+
       fontSize: 22,
       alignSelf: 'center'
     },
     buttonSignup: {
       alignSelf: 'center',
-      marginBottom: 30,
+      marginTop: 30,
       width: 300,
-      height: 45,
+      height: 105,
     },
     inputPadding:{
       marginTop: 20,

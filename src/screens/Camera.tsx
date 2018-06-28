@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, StyleSheet} from 'react-native';
+import { TouchableOpacity, View, StyleSheet } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import Loading from '../components/Loading';
 import ViewFinder from 'react-native-view-finder'
 import Icon from 'react-native-vector-icons/Entypo';
+import Geocoder from 'react-native-geocoder';
 
 import IStoreState from '../store/IStoreState';
 import { connect, Dispatch } from 'react-redux';
@@ -20,6 +21,11 @@ interface IState {
   torchMode: boolean,
   address: string,
   userAddress: string
+  lat: any,
+  lng: any,
+  location: string,
+  username: string,
+  password: string
 }
 
 export class Camera extends Component<IProps, IState> {
@@ -32,20 +38,57 @@ export class Camera extends Component<IProps, IState> {
       isLoading: false,
       torchMode: false,
       address: this.props.navigation.getParam('address'),
-      userAddress: this.props.navigation.getParam('userAddress')
-    }
+      userAddress: this.props.navigation.getParam('userAddress'),
+      username: this.props.navigation.getParam('username'),
+      password: this.props.navigation.getParam('password'),
+      lat: '',
+      lng: '',
+      location: '',
+  }
 
     this.onBarCodeRead = this.onBarCodeRead.bind(this);
     this.toggleFlash = this.toggleFlash.bind(this);
+    this.goToDetails = this.goToDetails.bind(this);
+  }
 
-    }
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.setState({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+        });
+        console.log(this.state.lat, this.state.lng);
+        this.getUserLocation();
+      });
+    };
+
+    //let address = AsyncStorage.getItem('address');
+    //console.log('got address from storage', address)
+
+
+  async getUserLocation() {
+    const position = {lat: this.state.lat, lng: this.state.lng}
+    console.log('got position', position)
+    const response = await Geocoder.geocodePosition(position);
+    console.log('got response from geocoder', response[0].locality)
+    this.setState({location: response[0].locality})
+  }
   
   onBarCodeRead(e) {
-    this.setState({uuid: e.data})
-    // navigate to detail page 
-    this.props.navigation.navigate('ContractDetail', {uuid: this.state.uuid, address: this.state.address, userAddress: this.state.userAddress})
-    this.setState({scanSuccess: true});
+    this.setState({uuid: e.data});
+    this.setState({isLoading: true});
+    this.goToDetails();
+  }
 
+  goToDetails() {
+    this.props.navigation.navigate('ContractDetail', {
+      username: this.state.username,
+      password: this.state.password,
+      location: this.state.location, 
+      uuid: this.state.uuid, 
+      address: this.state.address, 
+      userAddress: this.state.userAddress});
   }
 
   toggleFlash() {

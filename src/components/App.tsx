@@ -44,7 +44,7 @@ const InternalStack = StackNavigator({
     navigationOptions: ({navigation}) => ({
       headerStyle: {backgroundColor: '#293742', paddingLeft: 10},
       title: navigation.indexs,
-      headerLeft: <Icon name="keyboard-arrow-left" size={30} color={'#ffffff'} onPress={ () => navigation.navigate('Map') } />
+      headerLeft: <Icon name="keyboard-arrow-left" size={30} color={'#ffffff'} onPress={ () => navigation.navigate('DrawerToggle') } />
     })
   },
   LifeCycle: { screen: LifeCycle },

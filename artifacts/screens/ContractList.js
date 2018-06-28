@@ -20,7 +20,9 @@ export default class ContractList extends Component {
                     "Last Updated: ",
                     item.createdAt)) }));
         this.state = {
-            username: '',
+            username: this.props.navigation.getParam('username'),
+            password: this.props.navigation.getParam('password'),
+            timestamp: '',
             isLoading: false,
             address: this.props.navigation.getParam('address'),
             data: [],
@@ -37,7 +39,7 @@ export default class ContractList extends Component {
     }
     faucet() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield fetch('http://localhost/strato-api/eth/v1.2/faucet', {
+            yield fetch('http://10.119.106.130/strato-api/eth/v1.2/faucet', {
                 method: 'POST',
                 body: `address=${this.state.address}`,
                 headers: {
@@ -61,7 +63,7 @@ export default class ContractList extends Component {
                 console.log('turning on the faucet for', this.state.address);
             }
             console.log('getting contract list...');
-            const blocURL = 'http://localhost/bloc/v2.2/contracts/';
+            const blocURL = 'http://10.119.106.130/bloc/v2.2/contracts/';
             yield fetch(blocURL, {
                 method: 'GET',
                 headers: {
@@ -74,7 +76,9 @@ export default class ContractList extends Component {
                 console.log(json);
                 this.setState({
                     data: json.SupplyChain,
+                    timestamp: json.SupplyChain.createdAt,
                 });
+                this.setState({ timestamp: new Date(this.state.timestamp * 1000).toString() });
                 console.log('got contracts!', this.state.data);
             })
                 .catch(function (error) {
@@ -86,9 +90,10 @@ export default class ContractList extends Component {
     onTouchContract(contract) {
         let address = contract.address;
         console.log('got address', address);
-        this.props.navigation.navigate('Contract', { address: address, userAddress: this.state.address });
+        this.props.navigation.navigate('Contract', { username: this.state.username, password: this.state.password, address: address, userAddress: this.state.address });
     }
     render() {
+        //let timestamp = new Date(this.state.timestamp * 1000).toString();
         console.log(this.state.data);
         return (React.createElement(View, { style: styles.view },
             React.createElement(Text, { style: styles.header }, "My Packages"),
@@ -97,13 +102,14 @@ export default class ContractList extends Component {
             this.state.data.length == 0 &&
                 React.createElement(Text, { style: styles.null }, "No packages have been created yet"),
             React.createElement(FlatList, { data: this.state.data, renderItem: this.renderItem, keyExtractor: item => item.id, refreshing: this.state.isLoading, onRefresh: () => this.getContracts() }),
-            React.createElement(Button, { containerStyle: styles.buttonSignup, icon: React.createElement(Icon, { name: 'plus', size: 15, color: 'white' }), onPress: () => { this.props.navigation.navigate('ContractBuilder'); }, title: 'ADD NEW PACKAGE' })));
+            React.createElement(View, { style: styles.buttonContainer },
+                React.createElement(Button, { containerStyle: styles.buttonSignup, icon: React.createElement(Icon, { name: 'plus', size: 15, color: 'white' }), onPress: () => { this.props.navigation.navigate('ContractBuilder'); }, title: 'Add Package' }))));
     }
 }
 ;
 const styles = StyleSheet.create({
     view: {
-        height: '100%',
+        height: '90%',
     },
     contractListItem: {
         paddingTop: 20,
@@ -129,10 +135,17 @@ const styles = StyleSheet.create({
     },
     buttonSignup: {
         alignSelf: 'center',
-        position: 'relative',
-        marginBottom: 30,
-        width: 300,
-        height: 45,
+        position: 'absolute',
+        top: 60,
+        padding: 15,
+        width: 400,
+        height: 75,
+    },
+    buttonContainer: {
+        height: 50,
+        position: 'absolute',
+        alignSelf: 'center',
+        bottom: 10,
     },
 });
 //# sourceMappingURL=ContractList.js.map

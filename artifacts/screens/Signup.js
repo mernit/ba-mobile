@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, AsyncStorage } from 'react-native';
+import { View, StyleSheet, Text, AsyncStorage, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button, Card } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -27,16 +27,31 @@ export class Signup extends Component {
         };
         this.createUser = this.createUser.bind(this);
         this.validateSignup = this.validateSignup.bind(this);
+        // this.test = this.test.bind(this);
         // this.faucet = this.faucet.bind(this);
     }
+    // test() {
+    //   fetch('https://mlbrfh44gb.execute-api.us-east-1.amazonaws.com/staging/getVisitedNodes', {
+    //     method: 'GET',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     }
+    //   })
+    //   .then(function(response) {
+    //     console.log('response', response.json);
+    //   })
+    //   .catch(function(error) {
+    //     console.log('error', error);
+    //   })
+    // }
     createUser() {
         this.setState({ createButtonDisabled: true, isLoading: true });
         let password = this.state.password;
-        fetch('http://localhost/bloc/v2.2/users/' + this.state.username, {
+        fetch('http://10.119.106.130/bloc/v2.2/users/' + this.state.username, {
             method: 'POST',
             body: JSON.stringify(password),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
         })
             .then(response => response.json())
@@ -49,7 +64,7 @@ export class Signup extends Component {
             AsyncStorage.setItem(`${this.state.username}`, JSON.stringify(this.state.address));
             console.log('stored username', AsyncStorage.getItem(`${this.state.username}`));
             console.log('stored address', AsyncStorage.getItem(`${this.state.address}`));
-            this.props.navigation.navigate('ContractList', { address: this.state.address, faucetAccount: true });
+            this.props.navigation.navigate('ContractList', { username: this.state.username, password: this.state.password, address: this.state.address, faucetAccount: true });
             //this.faucet()
         })
             .catch(function (error) {
@@ -116,7 +131,8 @@ export class Signup extends Component {
     }
     render() {
         return (React.createElement(View, { style: styles.view },
-            React.createElement(Text, { style: styles.header }, "Create Account "),
+            React.createElement(Image, { style: styles.image, source: require('/Users/beta9/ba-mobile/src/screens/ba.png') }),
+            React.createElement(Text, { style: styles.header }, "BlockApps STRATO"),
             React.createElement(Card, { containerStyle: styles.loginCard },
                 React.createElement(Input, { placeholder: 'Username', leftIcon: React.createElement(Icon, { name: 'user', size: 20, color: '#333333' }), containerStyle: styles.inputPadding, onChangeText: (username) => this.setState({ username }), value: this.state.username }),
                 React.createElement(Input, { placeholder: 'Password', leftIcon: React.createElement(Icon, { name: 'lock', size: 20, color: '#333333' }), secureTextEntry: true, containerStyle: styles.inputPadding, 
@@ -141,28 +157,31 @@ function mapDispatchToProps(dispatch) {
 export default connect(mapStateToProps, mapDispatchToProps)(Signup);
 // define styles
 const styles = StyleSheet.create({
-    loginCard: {},
+    loginCard: {
+    //backgroundColor: 'pink'
+    },
+    image: {
+        paddingTop: 40,
+        width: 130,
+        height: 150,
+    },
     loading: {
         alignSelf: 'center',
         width: 300,
         height: 50,
     },
     header: {
+        padding: 30,
         fontSize: 22
     },
     view: {
-        padding: 30,
+        padding: 50,
         flex: 1,
         alignItems: 'center',
-        backgroundColor: '#ffffff'
     },
     button: {
-        backgroundColor: "rgba(92, 99,216, 1)",
         width: 300,
         height: 45,
-        borderColor: "transparent",
-        borderWidth: 0,
-        borderRadius: 5
     },
     inputPadding: {
         marginTop: 20,
@@ -174,7 +193,7 @@ const styles = StyleSheet.create({
         borderLeftWidth: 1,
         borderRightWidth: 1,
         borderBottomWidth: 1,
-        borderRadius: 5,
+        borderRadius: 20,
         padding: 5,
     }
 });
