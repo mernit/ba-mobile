@@ -56,8 +56,7 @@ export default class Camera extends Component {
         });
     }
     onBarCodeRead(e) {
-        this.setState({ uuid: e.data });
-        this.setState({ isLoading: true });
+        this.setState({ uuid: e.data, isLoading: true });
         this.goToDetails();
     }
     goToDetails() {
@@ -71,16 +70,14 @@ export default class Camera extends Component {
         });
     }
     toggleFlash() {
-        this.state.torchMode == false ?
-            this.setState({ torchMode: true }) :
+        this.state.torchMode == false ? this.setState({ torchMode: true }) :
             this.setState({ torchMode: false });
     }
     render() {
         return (React.createElement(View, { style: styles.container },
             this.state.isLoading &&
                 React.createElement(Loading, null),
-            React.createElement(RNCamera, { style: styles.container, barCodeTypes: [RNCamera.Constants.BarCodeType.qr], onBarCodeRead: this.onBarCodeRead, type: RNCamera.Constants.Type.back, flashMode: this.state.torchMode ?
-                    RNCamera.Constants.FlashMode.torch :
+            React.createElement(RNCamera, { style: styles.container, barCodeTypes: [RNCamera.Constants.BarCodeType.qr], onBarCodeRead: this.onBarCodeRead, type: RNCamera.Constants.Type.back, flashMode: this.state.torchMode ? RNCamera.Constants.FlashMode.torch :
                     RNCamera.Constants.FlashMode.off, permissionDialogTitle: 'Permission to use camera', permissionDialogMessage: 'We need permission to use your camera' }),
             React.createElement(ViewFinder, null),
             React.createElement(TouchableOpacity, { style: styles.button, onPress: this.toggleFlash },

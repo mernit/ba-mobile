@@ -11,7 +11,7 @@ import { Icon, Button, Card } from 'react-native-elements';
     //const username = await AsyncStorage.getItem(`${this.state.address}`)
 // ********* END HAND ASYNC CODE ********* //
 
-const HOST_URL = 'http://10.119.109.205';
+const HOST_URL = 'http://10.119.110.103';
 
 interface IProps {
     navigation: any,
@@ -21,7 +21,6 @@ interface IState {
     password: string,
     isLoading: boolean,
     username: string,
-    contractName: string,
     address: any,
     status: string,
     method: string,
@@ -43,7 +42,6 @@ export default class ContractDetail extends Component<IProps, IState> {
         isLoading: true,
         address: this.props.navigation.getParam('address'),
         userAddress: this.props.navigation.getParam('userAddress'),
-        contractName: '',
         status: '',
         method: '',
         args: '',
@@ -79,6 +77,7 @@ export default class ContractDetail extends Component<IProps, IState> {
         location: this.state.location, // update with user location
         uuid: this.state.uuid, // update uuid with location
       };
+
       fetch(blocURL + username + '/' + userAddress + '/contract/SupplyChain/' + address + '/call?resolve', {
         method: 'POST',
         headers: {
@@ -94,7 +93,7 @@ export default class ContractDetail extends Component<IProps, IState> {
       })
       .then(function(response) {
         console.log(response);
-        //this.getState();
+        this.getState();
       })
       .catch(function(error) {
         console.log(error);
@@ -167,10 +166,10 @@ export default class ContractDetail extends Component<IProps, IState> {
                     containerStyle={styles.buttonSignup}
                     onPress={() => { this.props.navigation.navigate('ContractList', {
                     username: this.state.username,
-                    // password: this.state.password,
-                    // location: this.state.location, 
-                    // uuid: this.state.uuid, 
-                    // address: this.state.address, 
+                    password: this.state.password,
+                    location: this.state.location, 
+                    uuid: this.state.uuid, 
+                    address: this.state.address, 
                     userAddress: this.state.userAddress})}}
                     title='Return to Contracts'
                 />

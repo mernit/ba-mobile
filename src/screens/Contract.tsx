@@ -2,20 +2,16 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
 
-const HOST_URL = 'http://10.119.109.205';
+const HOST_URL = 'http://10.119.110.103';
 
 interface IProps {
     navigation: any,
 }
 
 interface IState {
-    loading: boolean,
     username: string,
     password: string, 
-    contractAddress: string,
-    contractName: string,
     address: any,
-    storedData: string,
     status: string,
     value: string,
     method: string,
@@ -23,8 +19,6 @@ interface IState {
     uuid: string,
     location: string,
     timestamp: any,
-    response: any,
-    stateResponse: Array<any>,
     currentLocation: any,
     userAddress: string,
 
@@ -35,28 +29,21 @@ export default class Contract extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-        stateResponse: [],
-        loading: true,
         uuid: '',
-        storedData: '',
         address: this.props.navigation.getParam('address'),
         userAddress: this.props.navigation.getParam('userAddress'),
-        contractAddress: '',
-        contractName: '',
         status: '',
         value: '',
         method: '',
         args: '',
         location: '',
         timestamp: '',
-        response: [],
         currentLocation: '',
         username: this.props.navigation.getParam('username'), // get uuid or address from camera
         password: this.props.navigation.getParam('password'),
     }
 
     this.componentWillMount = this.componentWillMount.bind(this);
-    this.callContract = this.callContract.bind(this);
     this.getState = this.getState.bind(this);
     }
 
@@ -70,68 +57,26 @@ export default class Contract extends Component<IProps, IState> {
       // }
   }
 
-  // CALL CONTRACT 
-
-  callContract() {
-    const blocURL = HOST_URL + '/bloc/v2.2/users/';
-    const username = 'Zabar';
-    const password = "1234";
-    const methodName = 'scanItem';
-    const address = '87168271eb89f6d0282725681f7b724bde31c4f0';
-    const contractAddress = 'b823216ffb44fcea8eb4e2a53d7275eee8435aef';
-    const callArgs = {
-      location: 'riverdale, ny 10463',
-      uuid: '123456789',
-      timestamp: '1142',
-    };
-    
-    fetch(blocURL + username + '/' + address + '/contract/SupplyChain/' + contractAddress + '/call?resolve', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        password: password,
-        method: methodName,
-        value: "0",
-        args: callArgs
+    getState() {
+      const blocURL = HOST_URL + `/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
+      fetch(blocURL, {
+        method: 'GET',
       })
-    })
-    .then(response => response.json())
-    .then(json => {
-      console.log(json);
-      this.setState({
-        status: json.data.contents[1],
+      .then(response => response.json())
+      .then(json => {
+        console.log(json.m_timestamp);
+        this.setState({
+          //location: json.itemIndex[0].location,
+          //currentLocation: json.itemIndex.slice(-1)[0].location,
+          timestamp: json.m_timestamp,
+          location: json.m_location,
+          uuid: json.m_uuid,
+        });
+      })
+      .catch(function (error) {
+        throw error;
       });
-    })
-    .catch(function (error) {
-      throw error;
-    });
-}
-
-getState() {
-  const blocURL = HOST_URL + `/bloc/v2.2/contracts/SupplyChain/${this.state.address}/state`;
-  fetch(blocURL, {
-    method: 'GET',
-  })
-  .then(response => response.json())
-  .then(json => {
-    console.log(json.m_timestamp);
-    this.setState({
-      //location: json.itemIndex[0].location,
-      //currentLocation: json.itemIndex.slice(-1)[0].location,
-      timestamp: json.m_timestamp,
-      location: json.m_location,
-      uuid: json.m_uuid,
-    });
-  })
-  .catch(function (error) {
-    throw error;
-  });
-}
-
-  // END CALL CONTRACT
+    }
 
     render() {
       let timestamp = new Date(this.state.timestamp * 1000).toString().slice(3, 25);

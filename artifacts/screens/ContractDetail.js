@@ -9,7 +9,7 @@ import { Icon, Button, Card } from 'react-native-elements';
 //console.log('user saved in storage', AsyncStorage.getItem(`${this.state.username}`));
 //const username = await AsyncStorage.getItem(`${this.state.address}`)
 // ********* END HAND ASYNC CODE ********* //
-const HOST_URL = 'http://10.119.109.205';
+const HOST_URL = 'http://10.119.110.103';
 export default class ContractDetail extends Component {
     constructor(props) {
         super(props);
@@ -18,7 +18,6 @@ export default class ContractDetail extends Component {
             isLoading: true,
             address: this.props.navigation.getParam('address'),
             userAddress: this.props.navigation.getParam('userAddress'),
-            contractName: '',
             status: '',
             method: '',
             args: '',
@@ -66,7 +65,7 @@ export default class ContractDetail extends Component {
         })
             .then(function (response) {
             console.log(response);
-            //this.getState();
+            this.getState();
         })
             .catch(function (error) {
             console.log(error);
@@ -109,10 +108,10 @@ export default class ContractDetail extends Component {
             React.createElement(Button, { icon: React.createElement(Icon, { name: 'history', size: 25, color: 'white' }), containerStyle: styles.buttonSignup, onPress: () => {
                     this.props.navigation.navigate('ContractList', {
                         username: this.state.username,
-                        // password: this.state.password,
-                        // location: this.state.location, 
-                        // uuid: this.state.uuid, 
-                        // address: this.state.address, 
+                        password: this.state.password,
+                        location: this.state.location,
+                        uuid: this.state.uuid,
+                        address: this.state.address,
                         userAddress: this.state.userAddress
                     });
                 }, title: 'Return to Contracts' })));

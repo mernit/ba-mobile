@@ -16,6 +16,9 @@ import Camera from '../screens/Camera';
 //import { AccountFaucetedActionCreator, IAccountFauceted } from '../actions/UserActions';
 //import UserService, { IAccountFauceted } from '../services/UserService';
 // @ts-ignore
+// ********** SET IP ADDRESS ********** //
+global.HOST_URL = 'eli';
+// ********** SET IP ADDRESS ********** //
 // SET GLOBAL PROPS //
 import { setCustomText } from 'react-native-global-props';
 const customTextProps = {

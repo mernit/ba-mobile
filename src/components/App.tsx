@@ -22,8 +22,13 @@ import Camera from '../screens/Camera'
 
 // @ts-ignore
 
+// ********** SET IP ADDRESS ********** //
+global.HOST_URL = 'eli';
+// ********** SET IP ADDRESS ********** //
+
+
 // SET GLOBAL PROPS //
-import { setCustomText} from 'react-native-global-props';
+import { setCustomText } from 'react-native-global-props';
 
 const customTextProps = {
   style: {

@@ -73,8 +73,7 @@ export default class Camera extends Component<IProps, IState> {
   }
   
   onBarCodeRead(e) {
-    this.setState({uuid: e.data});
-    this.setState({isLoading: true});
+    this.setState({uuid: e.data, isLoading: true});
     this.goToDetails();
   }
 
@@ -85,13 +84,13 @@ export default class Camera extends Component<IProps, IState> {
       location: this.state.location, 
       uuid: this.state.uuid, 
       address: this.state.address, 
-      userAddress: this.state.userAddress});
+      userAddress: this.state.userAddress
+    });
   }
 
   toggleFlash() {
-    this.state.torchMode == false ? 
-    this.setState({torchMode: true}) :
-    this.setState({torchMode: false});
+      this.state.torchMode == false ? this.setState({torchMode: true}) :
+      this.setState({torchMode: false});
   }
 
   render() {    
@@ -109,8 +108,7 @@ export default class Camera extends Component<IProps, IState> {
             onBarCodeRead={this.onBarCodeRead}
             type={RNCamera.Constants.Type.back}
             flashMode={
-              this.state.torchMode ? 
-              RNCamera.Constants.FlashMode.torch :
+              this.state.torchMode ? RNCamera.Constants.FlashMode.torch :
               RNCamera.Constants.FlashMode.off
             }
             permissionDialogTitle={'Permission to use camera'}

@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { ListItem, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-const HOST_URL = 'http://10.119.109.205';
+const HOST_URL = 'http://10.119.110.103';
 export default class ContractList extends Component {
     constructor(props) {
         super(props);
@@ -59,7 +59,7 @@ export default class ContractList extends Component {
     }
     getContracts() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.state.faucetAccount) {
+            if (this.state.faucetAccount === true) {
                 yield this.faucet();
                 console.log('turning on the faucet for', this.state.address);
             }

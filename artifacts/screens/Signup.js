@@ -10,10 +10,10 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, AsyncStorage, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button, Card } from 'react-native-elements';
+//import Config from 'react-native-config'
 // import { UsernameChangedActionCreator } from '../actions/AuthActions';
 import Toast from 'react-native-easy-toast';
-//import Config from 'react-native-config'
-const HOST_URL = 'http://10.119.109.205';
+const HOST_URL = 'http://10.119.110.103';
 export default class Signup extends Component {
     constructor(props) {
         super(props);
@@ -23,28 +23,11 @@ export default class Signup extends Component {
             address: '',
             password: '',
             confirmPassword: '',
-            faucetSuccess: false,
-            createButtonDisabled: false
+            createButtonDisabled: false,
         };
         this.createUser = this.createUser.bind(this);
         this.validateSignup = this.validateSignup.bind(this);
-        // this.test = this.test.bind(this);
-        // this.faucet = this.faucet.bind(this);
     }
-    // test() {
-    //   fetch('https://mlbrfh44gb.execute-api.us-east-1.amazonaws.com/staging/getVisitedNodes', {
-    //     method: 'GET',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     }
-    //   })
-    //   .then(function(response) {
-    //     console.log('response', response.json);
-    //   })
-    //   .catch(function(error) {
-    //     console.log('error', error);
-    //   })
-    // }
     createUser() {
         console.log('got config url', HOST_URL);
         this.setState({ createButtonDisabled: true, isLoading: true });

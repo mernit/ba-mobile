@@ -12,7 +12,7 @@ import { Input, Button, Card } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Toast from 'react-native-easy-toast';
 import Geocoder from 'react-native-geocoder';
-const HOST_URL = 'http://10.119.109.205';
+const HOST_URL = 'http://10.119.110.103';
 export default class Confirmation extends Component {
     constructor(props) {
         super(props);

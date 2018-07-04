@@ -7,13 +7,11 @@ import { Input, Button, Card } from 'react-native-elements';
 // @ts-ignore
 import { bindActionCreators } from 'redux';
 
+//import Config from 'react-native-config'
+
 // import { UsernameChangedActionCreator } from '../actions/AuthActions';
 
 import Toast from 'react-native-easy-toast';
-
-//import Config from 'react-native-config'
-
-const HOST_URL = 'http://10.119.109.205';
 
 interface IProps {
   navigation: any;
@@ -26,8 +24,9 @@ interface IState {
   confirmPassword: string,
   createButtonDisabled: boolean,
   address: string,
-  faucetSuccess: boolean
 }
+
+const HOST_URL = 'http://10.119.110.103';
 
 export default class Signup extends Component<IProps, IState> {
 
@@ -40,35 +39,19 @@ export default class Signup extends Component<IProps, IState> {
       address: '',
       password: '',
       confirmPassword: '',
-      faucetSuccess: false,
-      createButtonDisabled: false
+      createButtonDisabled: false,
     };
 
-    this.createUser = this.createUser.bind(this);
-    this.validateSignup = this.validateSignup.bind(this);
-    // this.test = this.test.bind(this);
-    // this.faucet = this.faucet.bind(this);
+      this.createUser = this.createUser.bind(this);
+      this.validateSignup = this.validateSignup.bind(this);
   }
 
-    // test() {
-    //   fetch('https://mlbrfh44gb.execute-api.us-east-1.amazonaws.com/staging/getVisitedNodes', {
-    //     method: 'GET',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     }
-    //   })
-    //   .then(function(response) {
-    //     console.log('response', response.json);
-    //   })
-    //   .catch(function(error) {
-    //     console.log('error', error);
-    //   })
-    // }
-
     createUser(){
+      
       console.log('got config url', HOST_URL);
       this.setState({createButtonDisabled: true, isLoading: true});
       let password = this.state.password;
+
       fetch(HOST_URL + '/bloc/v2.2/users/' + this.state.username, {
         method: 'POST',
         body: JSON.stringify(password),
@@ -280,7 +263,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderRadius: 20,
     padding: 5,
-
   }
-
 });
