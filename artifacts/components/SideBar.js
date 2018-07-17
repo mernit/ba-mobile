@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { NavigationActions } from 'react-navigation';
-const HOST_URL = 'http://10.119.110.103';
+import { HOST_URL } from '../env';
 export default class SideBar extends Component {
     constructor(props) {
         super(props);

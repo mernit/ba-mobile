@@ -1,2 +1,2 @@
 dependencies: \
-  /Users/beta9/copyofacopy/MobileApp/node_modules/react-native-camera/ios/RCT/NSMutableDictionary+ImageMetadata.m
+  /Users/beta9/ba-mobile/node_modules/react-native-camera/ios/RCT/NSMutableDictionary+ImageMetadata.m

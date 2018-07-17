@@ -1,9 +1,11 @@
-# BlockApps REST API Examples
+# BlockApps Demo App
 
 This project demonstrates a few of the BlockApps REST APIs which can be used to bootstrap simple blockchain functionality into an existing web or mobile app. In this example, we use our REST API to:
+
 * create a blockchain user with an Ethereum address
-* deploy a simple smart contract
-* display some information from our node to monitor the status of our blockchain
+* deploy a smart contract
+* update a smart contract
+* display some information about our blockchain node
 
 BlockApps REST APIs come in two flavors: application-level and network-level. Most of the time, you'll be using our application-level API, called [Bloc](https://stratodev.blockapps.net/docs/?url=/bloc/v2.2/swagger.json), to execute basic CRUD functionality, like creating users, deploying contracts, and calling contract functions. Our network-level API, called [STRATO](https://stratodev.blockapps.net/docs/?url=/strato-api/eth/v1.2/swagger.json), offers advanced functionality to pull data directly from the [Merkle-Patricia trie](https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Hash_Tree.svg/1200px-Hash_Tree.svg.png) of your Blockchain. 
 
@@ -23,7 +25,6 @@ Another thing to keep in mind is that the API doesn't yet support user authentic
 | Call Contract Function      | `POST /users/{user}/{userAddress}/contract/{contractName}/{contractAddress}/call`      |   `src/screens/ContractBuilder` |
 | Get Blockchain Info | `GET /apex-api/status`      |    `src/components/Sidebar` |
 
-
 ## Prerequisites
 
 * [Running STRATO Instance](https://github.com/blockapps/strato-getting-started/)
@@ -35,6 +36,7 @@ Another thing to keep in mind is that the API doesn't yet support user authentic
 * `git clone https://github.com/mernit/ba-mobile`
 * `cd ba-mobile`
 * `npm i` 
+* Edit the `env.js` file with the IP address of your STRATO node
 * `npm run ios:start`
 
 The app should open in your iOS simulator.
@@ -43,6 +45,7 @@ The app should open in your iOS simulator.
 
 My goal is to develop a succinct app which shows off the extent of our REST API functionality. If you would like to contribute, here is a shortlist of easy-wins:
 
-* Allow user to select preconfigured contract to deploy in `ContractBuilder`
-* Create a page to [list](https://facebook.github.io/react-native/docs/flatlist.html) all contracts for a user account
-* Create a `ContractDetails` screen which allows the user to call functions on a contract
+* ~~Allow user to select preconfigured contract to deploy in `ContractBuilder`~~
+* ~~Create a page to [list](https://facebook.github.io/react-native/docs/flatlist.html) all contracts for a user account~~
+* ~~Create a `ContractDetails` screen which allows the user to call functions on a contract~~
+* Migrate project to Redux 

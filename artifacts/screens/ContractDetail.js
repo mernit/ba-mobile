@@ -9,7 +9,7 @@ import { Icon, Button, Card } from 'react-native-elements';
 //console.log('user saved in storage', AsyncStorage.getItem(`${this.state.username}`));
 //const username = await AsyncStorage.getItem(`${this.state.address}`)
 // ********* END HAND ASYNC CODE ********* //
-const HOST_URL = 'http://10.119.110.103';
+const HOST_URL = 'http://192.168.1.167';
 export default class ContractDetail extends Component {
     constructor(props) {
         super(props);

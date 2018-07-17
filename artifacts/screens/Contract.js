@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
-const HOST_URL = 'http://10.119.110.103';
+import { HOST_URL } from '../env';
 export default class Contract extends Component {
     constructor(props) {
         super(props);

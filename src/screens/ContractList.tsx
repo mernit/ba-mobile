@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { ListItem, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-const HOST_URL = 'http://10.119.110.103';
+import { HOST_URL } from '../env';
 
 interface IProps {
     navigation: any,

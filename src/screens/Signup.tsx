@@ -11,6 +11,8 @@ import { bindActionCreators } from 'redux';
 
 // import { UsernameChangedActionCreator } from '../actions/AuthActions';
 
+import { HOST_URL } from '../env';
+
 import Toast from 'react-native-easy-toast';
 
 interface IProps {
@@ -25,8 +27,6 @@ interface IState {
   createButtonDisabled: boolean,
   address: string,
 }
-
-const HOST_URL = 'http://10.119.110.103';
 
 export default class Signup extends Component<IProps, IState> {
 

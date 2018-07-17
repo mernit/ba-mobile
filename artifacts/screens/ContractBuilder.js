@@ -12,7 +12,7 @@ import { Input, Button, Card } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Toast from 'react-native-easy-toast';
 import Geocoder from 'react-native-geocoder';
-const HOST_URL = 'http://10.119.110.103';
+import { HOST_URL } from '../env';
 export default class Confirmation extends Component {
     constructor(props) {
         super(props);
@@ -124,7 +124,7 @@ export default class Confirmation extends Component {
             };
             const RequestBody = { password, src, args };
             console.log('got address from storage for user:', this.state.username, '--->', this.state.address);
-            yield fetch(blocURL + username + '/' + this.state.address + '/contract?resolve', {
+            yield fetch(blocURL + username + '/' + this.state.address + '/contract?resolve=true', {
                 method: 'POST',
                 body: JSON.stringify(RequestBody),
                 headers: {

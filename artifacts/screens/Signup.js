@@ -12,8 +12,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button, Card } from 'react-native-elements';
 //import Config from 'react-native-config'
 // import { UsernameChangedActionCreator } from '../actions/AuthActions';
+import { HOST_URL } from '../env';
 import Toast from 'react-native-easy-toast';
-const HOST_URL = 'http://10.119.110.103';
 export default class Signup extends Component {
     constructor(props) {
         super(props);
