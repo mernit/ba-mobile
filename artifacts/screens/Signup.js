@@ -10,11 +10,15 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, AsyncStorage, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button, Card } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { UserLoggedInActionCreator } from '../actions/AuthActions';
+// import AuthService, { IUserLoggedIn } from '../services/AuthService';
 //import Config from 'react-native-config'
 // import { UsernameChangedActionCreator } from '../actions/AuthActions';
 import { HOST_URL } from '../env';
 import Toast from 'react-native-easy-toast';
-export default class Signup extends Component {
+export class Signup extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,7 +31,11 @@ export default class Signup extends Component {
         };
         this.createUser = this.createUser.bind(this);
         this.validateSignup = this.validateSignup.bind(this);
+        // this.userLoggedIn = this.userLoggedIn.bind(this);
     }
+    // private async userLoggedIn(props: IUserLoggedIn) {
+    //   await this.props.UserLoggedIn(props.loggedIn);
+    // }
     createUser() {
         console.log('got config url', HOST_URL);
         this.setState({ createButtonDisabled: true, isLoading: true });
@@ -130,6 +138,20 @@ export default class Signup extends Component {
     }
 }
 ;
+// @ts-ignore
+function mapStateToProps(state) {
+    // @ts-ignore
+    return {
+        loggedIn: state.loggedIn
+    };
+}
+// @ts-ignore
+function mapDispatchToProps(dispatch) {
+    return {
+        UserLoggedIn: bindActionCreators(UserLoggedInActionCreator, dispatch),
+    };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Signup);
 // define styles
 const styles = StyleSheet.create({
     loginCard: {

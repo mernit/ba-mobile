@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
+import { HOST_URL } from '../env';
+
 
 // ********* START HANDY ASYNC CODE ********* //
     // return AsyncStorage.getItem(`${this.state.username}`)
@@ -10,8 +12,6 @@ import { Icon, Button, Card } from 'react-native-elements';
     //console.log('user saved in storage', AsyncStorage.getItem(`${this.state.username}`));
     //const username = await AsyncStorage.getItem(`${this.state.address}`)
 // ********* END HAND ASYNC CODE ********* //
-
-const HOST_URL = 'http://192.168.1.167';
 
 interface IProps {
     navigation: any,

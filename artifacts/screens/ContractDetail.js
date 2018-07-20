@@ -1,15 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Icon, Button, Card } from 'react-native-elements';
-// ********* START HANDY ASYNC CODE ********* //
-// return AsyncStorage.getItem(`${this.state.username}`)
-// .then(req => JSON.parse(req))
-// .then(json => this.setState({username: json}))
-// console.log('got json back from async storage', this.state.username);
-//console.log('user saved in storage', AsyncStorage.getItem(`${this.state.username}`));
-//const username = await AsyncStorage.getItem(`${this.state.address}`)
-// ********* END HAND ASYNC CODE ********* //
-const HOST_URL = 'http://192.168.1.167';
+import { HOST_URL } from '../env';
 export default class ContractDetail extends Component {
     constructor(props) {
         super(props);

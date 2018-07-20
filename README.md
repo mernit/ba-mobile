@@ -31,15 +31,24 @@ Another thing to keep in mind is that the API doesn't yet support user authentic
 * [React Native](https://facebook.github.io/react-native/docs/getting-started.html)
 * XCode (requires iOS) 
 
-## Running the App
+## Running the App on Desktop Simulator
 
 * `git clone https://github.com/mernit/ba-mobile`
 * `cd ba-mobile`
 * `npm i` 
 * Edit the `env.js` file with the IP address of your STRATO node
 * `npm run ios:start`
+* The app should open in your iOS simulator.
 
-The app should open in your iOS simulator.
+## Running the App on an iPhone
+
+* `git clone https://github.com/mernit/ba-mobile`
+* `cd ba-mobile`
+* `npm i` 
+* Edit the `env.js` file with the IP address of your STRATO node
+* `cd ios`
+* `open MobileApp .xcworkspace` - XCode will open
+* Plug your mobile phone into your computer - XCode should recognize it. Then, select your phone from the device dropdown and click `Build.` The app should begin to install on your phone 
 
 ## Contributing and Future Features
 
@@ -48,4 +57,5 @@ My goal is to develop a succinct app which shows off the extent of our REST API 
 * ~~Allow user to select preconfigured contract to deploy in `ContractBuilder`~~
 * ~~Create a page to [list](https://facebook.github.io/react-native/docs/flatlist.html) all contracts for a user account~~
 * ~~Create a `ContractDetails` screen which allows the user to call functions on a contract~~
+* Require username, address, and password at beginning of session and store in state. Currently, the username is stored only when an account is created.
 * Migrate project to Redux 

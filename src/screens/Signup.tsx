@@ -5,7 +5,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button, Card } from 'react-native-elements';
 
 // @ts-ignore
+import IStoreState from '../store/IStoreState';
+import { connect, Dispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { UserLoggedInActionCreator } from '../actions/AuthActions';
+// import AuthService, { IUserLoggedIn } from '../services/AuthService';
 
 //import Config from 'react-native-config'
 
@@ -17,6 +21,8 @@ import Toast from 'react-native-easy-toast';
 
 interface IProps {
   navigation: any;
+  loggedIn: boolean;
+  UserLoggedIn?: (loggedIn: boolean) => (dispatch: Dispatch<IStoreState>) => Promise<void>;
 }
 
 interface IState {
@@ -28,7 +34,7 @@ interface IState {
   address: string,
 }
 
-export default class Signup extends Component<IProps, IState> {
+export class Signup extends Component<IProps, IState> {
 
   constructor(props: IProps){
     super(props);
@@ -44,7 +50,12 @@ export default class Signup extends Component<IProps, IState> {
 
       this.createUser = this.createUser.bind(this);
       this.validateSignup = this.validateSignup.bind(this);
-  }
+      // this.userLoggedIn = this.userLoggedIn.bind(this);
+    }
+
+    // private async userLoggedIn(props: IUserLoggedIn) {
+    //   await this.props.UserLoggedIn(props.loggedIn);
+    // }
 
     createUser(){
       
@@ -221,6 +232,24 @@ export default class Signup extends Component<IProps, IState> {
     )
   }
 };
+
+ // @ts-ignore
+ function mapStateToProps(state: IStoreState): IProps {
+  // @ts-ignore
+  return {
+    loggedIn: state.loggedIn
+  };
+}
+
+
+// @ts-ignore
+function mapDispatchToProps(dispatch: Dispatch<IStoreState>) {
+  return {
+    UserLoggedIn: bindActionCreators(UserLoggedInActionCreator, dispatch),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Signup);
 
 // define styles
 const styles = StyleSheet.create({
